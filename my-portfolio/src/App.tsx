@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef, FC, CSSProperties } from "react";
-import rtcImg from "./assets/rtc.png";
+import { useState, useEffect, useRef } from "react";
 import aatcImg from "./assets/aatc.png";
 import asset05Img from "./assets/asset05.png";
 import ebayVideo from "./assets/ebay-01.mp4";
