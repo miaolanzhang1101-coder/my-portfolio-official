@@ -3,6 +3,8 @@ import rtcImg from "./assets/rtc.png";
 import aatcImg from "./assets/aatc.png";
 import asset05Img from "./assets/asset05.png";
 import ebayVideo from "./assets/ebay-01.mp4";
+import tiktok2 from "./assets/tiktok2.mov";
+import tencent1 from "./assets/tencent1.mov";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -56,15 +58,15 @@ const projects: Project[] = [
   {
     id: 5, tag: "TikTok", company: null, title: "Creator Discovery Flow",
     description: "I redesigned the creator discovery flow for TikTok two-sided creator marketplace.",
-    image: null, video: null,
+    image: null, video: tiktok2,
     link: "https://miaolanzhang.notion.site/TikTok-3252080795728008a60bf9b2518c89b1",
     tall: false, date: "spring 2023",
   },
   {
-    id: 6, tag: "TikTok", company: null, title: "Creator Discovery Flow",
+    id: 6, tag: "Tencent", company: null, title: "Creator Discovery Flow",
     description: "I redesigned the creator discovery flow for TikTok two-sided creator marketplace.",
-    image: null, video: null,
-    link: "https://miaolanzhang.notion.site/TikTok-3252080795728008a60bf9b2518c89b1",
+    image: null, video: tencent1,
+    link: "https://miaolanzhang.notion.site/Tencent-3252080795728008a60bf9b2518c89b1",
     tall: false, date: "spring 2023",
   },
 ];
