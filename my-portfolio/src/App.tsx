@@ -5,6 +5,7 @@ import asset05Img from "./assets/asset05.png";
 import ebayVideo from "./assets/ebay-01.mp4";
 import tiktok2 from "./assets/tiktok2.mov";
 import tencent1 from "./assets/tencent1.mov";
+import fashion from "./assets/fashion.mp4";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -51,20 +52,19 @@ const projects: Project[] = [
   {
     id: 4, tag: "ClipAI", company: null, title: "Automated Video Clipping",
     description: "I initiated a new content creation workflow for automated video clipping.",
-    image: null, video: null,
-    link: "https://miaolanzhang.notion.site/ClipAI-31c2080795728096a762c78c32bd7ffa",
+    image: null, video: fashion,
     tall: false, date: "fall 2023",
   },
   {
-    id: 5, tag: "TikTok", company: null, title: "Creator Discovery Flow",
+    id: 5, tag: "TikTok", company: null, title: "Creator Discovery Experience",
     description: "I redesigned the creator discovery flow for TikTok two-sided creator marketplace.",
     image: null, video: tiktok2,
     link: "https://miaolanzhang.notion.site/TikTok-3252080795728008a60bf9b2518c89b1",
     tall: false, date: "spring 2023",
   },
   {
-    id: 6, tag: "Tencent", company: null, title: "Creator Discovery Flow",
-    description: "I redesigned the creator discovery flow for TikTok two-sided creator marketplace.",
+    id: 6, tag: "Tencent", company: null, title: "eCommerce Subscription",
+    description: "I redesigned the consumer subscription flow for WeChat Stores.",
     image: null, video: tencent1,
     link: "https://miaolanzhang.notion.site/Tencent-3252080795728008a60bf9b2518c89b1",
     tall: false, date: "spring 2023",
@@ -239,32 +239,32 @@ const CURSOR_CONFIGS: Record<number, CursorConfig> = {
   1: {
     bg: "rgba(180,210,255,0.18)", border: "rgba(120,170,255,0.55)",
     glow: "rgba(100,149,237,0.35)", label: "JavaAI",
-    labelColor: "rgba(80,130,230,0.9)", size: 80, shape: "pill",
+    labelColor: "rgb(255, 255, 255)", size: 80, shape: "pill",
   },
   2: {
-    bg: "rgba(255,200,80,0.14)", border: "rgba(230,160,40,0.5)",
+    bg: "rgba(255,200,80,0.14)", border: "rgb(255, 255, 255)",
     glow: "rgba(220,150,30,0.3)", label: "eBay",
-    labelColor: "rgba(190,120,20,0.9)", size: 72, shape: "circle",
+    labelColor: "rgb(255, 255, 255)", size: 72, shape: "circle",
   },
   3: {
-    bg: "rgba(140,220,160,0.14)", border: "rgba(80,180,110,0.5)",
+    bg: "rgba(140,220,160,0.14)", border: "rgba(15, 3, 250, 0.48)",
     glow: "rgba(60,160,90,0.28)", label: "Colgate",
-    labelColor: "rgba(40,140,70,0.9)", size: 84, shape: "pill",
+    labelColor: "rgb(9, 9, 9)", size: 84, shape: "pill",
   },
   4: {
-    bg: "rgba(30,30,30,0.45)", border: "rgba(232,168,76,0.6)",
+    bg: "rgba(30,30,30,0.45)", border: "rgb(255, 255, 255)",
     glow: "rgba(232,168,76,0.3)", label: "ClipAI",
-    labelColor: "rgba(232,168,76,1)", size: 76, shape: "circle",
+    labelColor: "rgb(255, 255, 255)", size: 76, shape: "circle",
   },
   5: {
     bg: "rgba(255,100,140,0.13)", border: "rgba(220,70,110,0.48)",
     glow: "rgba(220,70,110,0.25)", label: "TikTok",
-    labelColor: "rgba(200,50,90,0.9)", size: 76, shape: "circle",
+    labelColor: "rgb(255, 255, 255)", size: 76, shape: "circle",
   },
   6: {
     bg: "rgba(255,100,140,0.13)", border: "rgba(220,70,110,0.48)",
-    glow: "rgba(220,70,110,0.25)", label: "TikTok",
-    labelColor: "rgba(200,50,90,0.9)", size: 76, shape: "circle",
+    glow: "rgba(220,70,110,0.25)", label: "Tencent",
+    labelColor: "rgb(255, 255, 255)", size: 76, shape: "circle",
   },
 };
 
@@ -274,11 +274,17 @@ interface CustomCursorProps {
   y: number;
 }
 const CustomCursor = ({ projectId, x, y }: CustomCursorProps) => {
-  const [visible, setVisible]   = useState(false);
-  const [pos, setPos]           = useState({ x: 0, y: 0 });
-  const rafRef                  = useRef<number>(0);
-  const targetRef               = useRef({ x: 0, y: 0 });
-  const currentRef              = useRef({ x: 0, y: 0 });
+  const [pos, setPos] = useState({ x: -100, y: -100 });
+  const rafRef        = useRef<number>(0);
+  const targetRef     = useRef({ x: -100, y: -100 });
+  const currentRef    = useRef({ x: -100, y: -100 });
+
+  // track global mouse for the dot cursor
+  useEffect(() => {
+    const move = (e: MouseEvent) => { targetRef.current = { x: e.clientX, y: e.clientY }; };
+    window.addEventListener("mousemove", move);
+    return () => window.removeEventListener("mousemove", move);
+  }, []);
 
   useEffect(() => { targetRef.current = { x, y }; }, [x, y]);
 
@@ -293,52 +299,62 @@ const CustomCursor = ({ projectId, x, y }: CustomCursorProps) => {
     return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
-  useEffect(() => { setVisible(projectId !== null); }, [projectId]);
-
-  if (!projectId) return null;
-  const cfg = CURSOR_CONFIGS[projectId];
-  if (!cfg) return null;
-
-  const half         = cfg.size / 2;
-  const borderRadius = cfg.shape === "circle" ? "50%" : `${cfg.size}px`;
+  const cfg = projectId ? CURSOR_CONFIGS[projectId] : null;
+  const half = cfg ? cfg.size / 2 : 0;
+  const borderRadius = cfg ? (cfg.shape === "circle" ? "50%" : `${cfg.size}px`) : "50%";
 
   return (
-    <div style={{
-      position: "fixed",
-      left: pos.x - half,
-      top: pos.y - half,
-      width: cfg.size,
-      height: cfg.size,
-      borderRadius,
-      background: cfg.bg,
-      border: `1px solid ${cfg.border}`,
-      backdropFilter: "blur(12px) saturate(1.6)",
-      WebkitBackdropFilter: "blur(12px) saturate(1.6)",
-      boxShadow: `0 0 18px 2px ${cfg.glow}, inset 0 1px 0 rgba(255,255,255,0.25)`,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      pointerEvents: "none",
-      zIndex: 9999,
-      transition: "opacity 0.2s ease, transform 0.2s ease",
-      opacity: visible ? 1 : 0,
-      transform: visible ? "scale(1)" : "scale(0.7)",
-    }}>
-      {/* inner shimmer ring */}
-      <div style={{ position:"absolute", inset:4, borderRadius, border:"0.5px solid rgba(255,255,255,0.2)", pointerEvents:"none" }} />
-      <span style={{
-        fontFamily: "'DM Mono', monospace",
-        fontSize: "10px",
-        letterSpacing: "0.08em",
-        color: cfg.labelColor,
-        fontWeight: 400,
-        position: "relative",
-        zIndex: 1,
-        whiteSpace: "nowrap",
-      }}>
-        {cfg.label}
-      </span>
-    </div>
+    <>
+      {/* ── global glass dot — always visible ── */}
+      <div style={{
+        position: "fixed",
+        left: pos.x - 8,
+        top: pos.y - 8,
+        width: 16,
+        height: 16,
+        borderRadius: "50%",
+        background: "rgba(255,255,255,0.55)",
+        border: "1px solid rgba(180,180,200,0.5)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9)",
+        pointerEvents: "none",
+        zIndex: 9999,
+        transition: "transform 0.15s ease, opacity 0.2s ease",
+        transform: cfg ? "scale(0.5)" : "scale(1)",
+        opacity: cfg ? 0.4 : 1,
+        mixBlendMode: "normal" as const,
+      }} />
+      {/* ── project label bubble — only on hover ── */}
+      {cfg && (
+        <div style={{
+          position: "fixed",
+          left: pos.x - half,
+          top: pos.y - half,
+          width: cfg.size,
+          height: cfg.size,
+          borderRadius,
+          background: cfg.bg,
+          border: `1px solid ${cfg.border}`,
+          backdropFilter: "blur(12px) saturate(1.6)",
+          WebkitBackdropFilter: "blur(12px) saturate(1.6)",
+          boxShadow: `0 0 18px 2px ${cfg.glow}, inset 0 1px 0 rgba(255,255,255,0.25)`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "none",
+          zIndex: 9998,
+          transition: "opacity 0.2s ease, transform 0.2s ease",
+          opacity: 1,
+          transform: "scale(1)",
+        }}>
+          <div style={{ position:"absolute", inset:4, borderRadius, border:"0.5px solid rgba(255,255,255,0.2)", pointerEvents:"none" }} />
+          <span style={{ fontFamily:"'DM Mono',monospace", fontSize:"10px", letterSpacing:"0.08em", color: cfg.labelColor, fontWeight:400, position:"relative", zIndex:1, whiteSpace:"nowrap" }}>
+            {cfg.label}
+          </span>
+        </div>
+      )}
+    </>
   );
 };
 
@@ -568,7 +584,7 @@ const SplashScreen: FC<{ onEnter: () => void }> = ({ onEnter }) => {
   },[]);
 
   return (
-    <div onClick={()=>{if(!ready)return;setExiting(true);setTimeout(onEnter,700);}} style={{position:"fixed",inset:0,zIndex:999,background:"linear-gradient(to top,#ede5ff 0%,#ffffff 32%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",cursor:ready?"pointer":"default",opacity:exiting?0:1,transition:exiting?"opacity 0.7s ease":"none",overflow:"hidden"}}>
+    <div onClick={()=>{if(!ready)return;setExiting(true);setTimeout(onEnter,700);}} style={{position:"fixed",inset:0,zIndex:999,background:"#ffffff",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",cursor:ready?"pointer":"default",opacity:exiting?0:1,transition:exiting?"opacity 0.7s ease":"none",overflow:"hidden",width:"100vw",height:"100vh"}}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap');
         .splash-name{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(48px,9.5vw,128px);font-weight:400;letter-spacing:-0.02em;line-height:1;background-image:url('https://images.unsplash.com/photo-1448375240586-882707db888b?w=1600&q=80');background-size:cover;background-position:center 30%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;user-select:none;padding:0 16px;text-align:center;position:relative;z-index:1;opacity:0;filter:blur(10px);transform:translateY(8px);transition:opacity 1.5s cubic-bezier(0.16,1,0.3,1),filter 1.5s cubic-bezier(0.16,1,0.3,1),transform 1.5s cubic-bezier(0.16,1,0.3,1);}
@@ -642,54 +658,118 @@ const ProjectCard: FC<ProjectCardProps> = ({ project, index, onCursorEnter, onCu
   };
 
   const mediaWrapperStyle: CSSProperties = {
-    width:"100%", borderRadius:"8px", overflow:"hidden",
-    background: project.id===4 ? "#141414" : project.video ? "#f4d2b7" : "#f0eeeb",
-    marginBottom:"14px", aspectRatio:"4/3", position:"relative",
+    width:"100%", borderRadius:"14px", overflow:"hidden",
+    background: project.id===4
+      ? "linear-gradient(180deg, #e8521a 0%, #c23a10 25%, #2a4a6b 60%, #8aafd4 82%, #d8eaf8 100%)"
+      : project.id===6 ? "#0d2357"
+      : project.video ? "#f4d2b7"
+      : "#f0eeeb",
+    marginBottom:"20px", aspectRatio:"3/2", position:"relative",
   };
 
   const overlayStyle: CSSProperties = {
     position:"absolute", inset:0,
     background:hovered?"rgba(0,0,0,0.04)":"rgba(0,0,0,0)",
     transition:"background 0.3s ease",
+    zIndex:5,
   };
 
   const imgStyle: CSSProperties = {
     width:"100%", height:"100%", objectFit:"cover", display:"block",
-    transition:"transform 0.5s ease",
-    transform:hovered?"scale(1.03)":"scale(1)",
+    transition:"transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)",
+    transform:hovered?"scale(1.06)":"scale(1)",
   };
 
   const arrowStyle: CSSProperties = {
     display:"inline-block",
     transform:hovered?"translate(2px,-2px)":"translate(0,0)",
     transition:"transform 0.2s ease",
-    opacity:0.4, fontSize:"11px",
+    opacity:0.4, fontSize:"14px",
   };
 
   const inner = (
     <>
       <div style={mediaWrapperStyle}>
         {project.id === 4 ? (
-          <ClipAIMotion />
+          <>
+            <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg, #e8521a 0%, #c23a10 25%, #2a4a6b 60%, #8aafd4 82%, #d8eaf8 100%)",zIndex:0}} />
+            <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 85% 90%,rgba(210,235,255,0.5) 0%,transparent 50%)",zIndex:1,animation:"clipGlow 5s ease-in-out infinite"}} />
+            <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 10% 10%,rgba(255,120,50,0.35) 0%,transparent 50%)",zIndex:1,animation:"clipGlow 6s ease-in-out infinite reverse"}} />
+            {project.video ? (
+              <video ref={videoRef} src={project.video} muted loop playsInline
+                style={{position:"absolute",inset:0,width:"70%",height:"80%",objectFit:"cover",display:"block",zIndex:3,margin:"auto",top:0,bottom:0,left:0,right:0,borderRadius:"10px",boxShadow:"0 8px 32px rgba(0,0,0,0.4)",pointerEvents:"none"}} />
+            ) : (
+              <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",zIndex:4,gap:10,pointerEvents:"none"}}>
+                <div style={{width:48,height:48,borderRadius:"50%",border:"1.5px solid rgba(255,255,255,0.25)",display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(255,255,255,0.08)",backdropFilter:"blur(4px)"}}>
+                  <div style={{width:0,height:0,borderTop:"9px solid transparent",borderBottom:"9px solid transparent",borderLeft:"15px solid rgba(255,255,255,0.55)",marginLeft:3}} />
+                </div>
+                <span style={{fontSize:"10px",color:"rgba(255,255,255,0.35)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.1em",textTransform:"uppercase"}}>video coming soon</span>
+              </div>
+            )}
+            {/* transparent capture layer — ensures mouse events always reach the <a> wrapper */}
+            <div style={{position:"absolute",inset:0,zIndex:9,background:"transparent"}}
+              onMouseEnter={(e) => { setHovered(true); onCursorEnter(project.id, e.clientX, e.clientY); }}
+              onMouseMove={(e) => onCursorMove(e.clientX, e.clientY)}
+              onMouseLeave={() => { setHovered(false); onCursorLeave(); }}
+            />
+          </>
         ) : project.video ? (
           <video ref={videoRef} src={project.video} muted loop playsInline autoPlay
             style={{width:"100%",height:"100%",objectFit:"contain",display:"block",padding:"12px"}} />
         ) : project.image ? (
           <img src={project.image} alt={project.title??project.company??""} style={imgStyle} />
         ) : null}
-        {project.link && project.id !== 4 && <div style={overlayStyle} />}
+        {project.link && <div style={overlayStyle} />}
+        {/* ── pill tag ── */}
+        <div style={{
+          position:"absolute", bottom:"12px", left:"12px",
+          background:"rgba(255,255,255,0.92)",
+          backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)",
+          borderRadius:"999px",
+          padding:"5px 12px",
+          display:"flex", alignItems:"center", gap:"6px",
+          boxShadow:"0 1px 4px rgba(0,0,0,0.08)",
+          pointerEvents:"none",
+          zIndex:10,
+        }}>
+          <span style={{fontFamily:"'Inter',sans-serif",fontSize:"12px",fontWeight:500,color:"#222",letterSpacing:"-0.01em"}}>{project.tag}</span>
+          <span style={{width:"3px",height:"3px",borderRadius:"50%",background:"#bbb",display:"inline-block",flexShrink:0}} />
+          <span style={{
+            display:"inline-flex",alignItems:"center",justifyContent:"center",
+            background:"rgba(255,255,255,0.6)",
+            border:"1px solid rgba(180,180,200,0.45)",
+            backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",
+            borderRadius:"999px",
+            minWidth:"26px",height:"26px",
+            padding:"0 9px",
+            fontSize:"10px",fontWeight:500,color:"#555",
+            fontFamily:"'DM Mono',monospace",letterSpacing:"0.02em",
+            boxShadow:"inset 0 1px 0 rgba(255,255,255,0.9), 0 1px 4px rgba(0,0,0,0.06)",
+          }}>{project.date}</span>
+        </div>
       </div>
 
-      <div style={{paddingLeft:"2px",textAlign:"left"}}>
-        <p style={{margin:"0 0 4px 0",fontSize:"11px",color:"#999",letterSpacing:"0.01em",fontFamily:"'DM Mono','Courier New',monospace",textAlign:"left",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+      <div style={{textAlign:"left"}}>
+        <p style={{margin:"0 0 6px 0",fontSize:"11px",color:"#999",letterSpacing:"0.01em",fontFamily:"'DM Mono','Courier New',monospace",textAlign:"left",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <span>{project.tag}</span>
-          <span style={{color:"#bbb"}}>{project.date}</span>
+          <span style={{
+            display:"inline-flex",alignItems:"center",justifyContent:"center",
+            background:"rgba(245,245,250,0.8)",
+            border:"1px solid rgba(180,180,200,0.4)",
+            backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",
+            borderRadius:"999px",
+            minWidth:"26px",height:"26px",
+            padding:"0 9px",
+            fontSize:"10px",fontWeight:500,color:"#888",
+            fontFamily:"'DM Mono',monospace",letterSpacing:"0.02em",
+            boxShadow:"inset 0 1px 0 rgba(255,255,255,0.95), 0 1px 3px rgba(0,0,0,0.04)",
+          }}>{project.date}</span>
         </p>
-        <h3 style={{margin:"0 0 6px 0",fontSize:"14px",fontWeight:500,fontFamily:"'DM Sans','Helvetica Neue',sans-serif",color:"#111",letterSpacing:"-0.01em",display:"flex",alignItems:"center",gap:"4px"}}>
+        <h3 style={{margin:"0 0 8px 0",fontSize:"20px",fontWeight:600,fontFamily:"'Inter',sans-serif",color:"#111",letterSpacing:"-0.03em",lineHeight:1.15,display:"flex",alignItems:"baseline",gap:"6px"}}>
           {project.title??project.company}
           {project.link && <span style={arrowStyle}>↗</span>}
         </h3>
-        <p style={{margin:0,fontSize:"12.5px",color:"#666",lineHeight:1.55,fontFamily:"'DM Sans','Helvetica Neue',sans-serif",textAlign:"left"}}>
+        <p style={{margin:0,fontSize:"16px",color:"#666",lineHeight:1.55,fontFamily:"'DM Sans','Helvetica Neue',sans-serif",textAlign:"left"}}>
           {project.description}
         </p>
       </div>
@@ -711,15 +791,307 @@ const ProjectCard: FC<ProjectCardProps> = ({ project, index, onCursorEnter, onCu
   );
 };
 
+// ─── Play Section ─────────────────────────────────────────────────────────────
+
+interface PlayVec2 { x: number; y: number; }
+
+function usePlayDrag(init: PlayVec2): [PlayVec2, (e: React.MouseEvent<HTMLDivElement>) => void] {
+  const [pos, setPos] = useState<PlayVec2>(init);
+  const dragging = useRef(false);
+  const startMouse = useRef<PlayVec2>({ x: 0, y: 0 });
+  const startPos = useRef<PlayVec2>(init);
+  const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).closest("button,a,input,textarea")) return;
+    dragging.current = true;
+    startMouse.current = { x: e.clientX, y: e.clientY };
+    startPos.current = { ...pos };
+    e.preventDefault();
+  };
+  useEffect(() => {
+    const move = (e: MouseEvent) => {
+      if (!dragging.current) return;
+      setPos({ x: startPos.current.x + (e.clientX - startMouse.current.x), y: startPos.current.y + (e.clientY - startMouse.current.y) });
+    };
+    const up = () => { dragging.current = false; };
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", up);
+    return () => { window.removeEventListener("mousemove", move); window.removeEventListener("mouseup", up); };
+  }, []);
+  return [pos, onMouseDown];
+}
+
+// Flow field canvas
+const PlayFlowCanvas: FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = canvasRef.current; if (!canvas) return;
+    const ctx = canvas.getContext("2d")!;
+    const W = canvas.width, H = canvas.height;
+    const particles = Array.from({ length: 200 }, () => ({ x: Math.random() * W, y: Math.random() * H, age: Math.random() * 80 }));
+    let t = 0, raf = 0;
+    const draw = () => {
+      ctx.fillStyle = "rgba(8,8,8,0.15)"; ctx.fillRect(0, 0, W, H);
+      for (const p of particles) {
+        const angle = (Math.sin(p.x / W * 3 + t) * Math.cos(p.y / H * 3 - t * 0.7) + Math.cos(p.x / W * 2 - t * 0.4) * Math.sin(p.y / H * 2 + t * 0.5)) * Math.PI * 2;
+        p.x += Math.cos(angle) * 1.2; p.y += Math.sin(angle) * 1.2; p.age++;
+        if (p.x < 0 || p.x > W || p.y < 0 || p.y > H || p.age > 120) { p.x = Math.random() * W; p.y = Math.random() * H; p.age = 0; }
+        const alpha = Math.sin((p.age / 120) * Math.PI) * 0.8;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 1.2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(61,127,255,${alpha})`; ctx.fill();
+      }
+      t += 0.007; raf = requestAnimationFrame(draw);
+    };
+    draw(); return () => cancelAnimationFrame(raf);
+  }, []);
+  return <canvas ref={canvasRef} width={320} height={180} style={{ display: "block", width: "100%", height: 180, borderRadius: "0 0 10px 10px" }} />;
+};
+
+// Lissajous canvas
+const PlayLissajousCanvas: FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = canvasRef.current; if (!canvas) return;
+    const ctx = canvas.getContext("2d")!;
+    const W = canvas.width, H = canvas.height, cx = W / 2, cy = H / 2, r = Math.min(W, H) * 0.38;
+    let t = 0, raf = 0;
+    const draw = () => {
+      ctx.fillStyle = "rgba(8,8,8,0.12)"; ctx.fillRect(0, 0, W, H);
+      [{ a: 3, b: 2, d: t, c: "#3d7fff" }, { a: 5, b: 4, d: t * 0.7 + 0.3, c: "#a855f7" }, { a: 2, b: 3, d: t * 1.3 + 1.0, c: "#e8d44d" }].forEach(({ a, b, d, c }) => {
+        ctx.beginPath();
+        for (let i = 0; i <= 360; i++) { const ang = (i / 360) * Math.PI * 2; i === 0 ? ctx.moveTo(cx + r * Math.sin(a * ang + d), cy + r * Math.sin(b * ang)) : ctx.lineTo(cx + r * Math.sin(a * ang + d), cy + r * Math.sin(b * ang)); }
+        ctx.strokeStyle = c + "88"; ctx.lineWidth = 1.5; ctx.stroke();
+      });
+      t += 0.005; raf = requestAnimationFrame(draw);
+    };
+    draw(); return () => cancelAnimationFrame(raf);
+  }, []);
+  return <canvas ref={canvasRef} width={280} height={200} style={{ display: "block", width: "100%", height: 200, borderRadius: "0 0 10px 10px" }} />;
+};
+
+// Orbit canvas
+const PlayOrbitCanvas: FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = canvasRef.current; if (!canvas) return;
+    const ctx = canvas.getContext("2d")!;
+    const W = canvas.width, H = canvas.height, cx = W / 2, cy = H / 2;
+    const rings = Array.from({ length: 5 }, (_, i) => ({ r: 20 + i * 24, speed: 0.008 + i * 0.003 * (i % 2 === 0 ? 1 : -1), count: 3 + i * 2, dotR: 3.5 - i * 0.3, phase: (i / 5) * Math.PI * 2 }));
+    let t = 0, raf = 0;
+    const draw = () => {
+      ctx.fillStyle = "rgba(8,8,8,0.2)"; ctx.fillRect(0, 0, W, H);
+      rings.forEach((ring, ri) => {
+        ctx.beginPath(); ctx.arc(cx, cy, ring.r, 0, Math.PI * 2); ctx.strokeStyle = "rgba(61,127,255,0.15)"; ctx.lineWidth = 0.8; ctx.stroke();
+        for (let d = 0; d < ring.count; d++) {
+          const angle = ring.phase + t * ring.speed * 60 + (d / ring.count) * Math.PI * 2;
+          ctx.beginPath(); ctx.arc(cx + ring.r * Math.cos(angle), cy + ring.r * Math.sin(angle), Math.max(0.5, ring.dotR), 0, Math.PI * 2);
+          ctx.fillStyle = ri % 2 === 0 ? "#3d7fff" : "#a855f7"; ctx.fill();
+        }
+      });
+      t += 0.016; raf = requestAnimationFrame(draw);
+    };
+    draw(); return () => cancelAnimationFrame(raf);
+  }, []);
+  return <canvas ref={canvasRef} width={260} height={200} style={{ display: "block", width: "100%", height: 200, borderRadius: "0 0 10px 10px" }} />;
+};
+
+// Node shell for play section
+// Glass PlayNode — Apple-style frosted glass
+const PlayNode: FC<PlayNodeProps> = ({ pos, drag, width = 300, label, icon, accent = false, delay = 0, children }) => (
+  <div onMouseDown={drag} style={{
+    position: "absolute", left: pos.x, top: pos.y, width,
+    background: "rgba(255,255,255,0.72)",
+    border: "1px solid rgba(255,255,255,0.9)",
+    borderRadius: 18,
+    boxShadow: accent
+      ? "0 0 0 1px rgba(61,127,255,0.2), 0 8px 40px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.95)"
+      : "0 8px 40px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.95)",
+    backdropFilter: "blur(24px) saturate(1.8)",
+    WebkitBackdropFilter: "blur(24px) saturate(1.8)",
+    cursor: "grab", userSelect: "none", zIndex: 10, overflow: "hidden",
+    animation: `playNodeIn 0.5s ${delay}s cubic-bezier(.16,1,.3,1) both`,
+  }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+      <span style={{ fontSize: 11, color: accent ? "#3d7fff" : "#aaa" }}>{icon}</span>
+      <span style={{ fontSize: 10, fontWeight: 600, color: accent ? "#3d7fff" : "#999", letterSpacing: "0.08em", textTransform: "uppercase", fontFamily: "'DM Mono', monospace" }}>{label}</span>
+      <div style={{ marginLeft: "auto", display: "flex", gap: 5 }}>
+        <div style={{ width: 8, height: 8, borderRadius: "50%", background: "rgba(0,0,0,0.08)" }} />
+        <div style={{ width: 8, height: 8, borderRadius: "50%", background: "rgba(192,57,43,0.25)" }} />
+      </div>
+    </div>
+    {children}
+  </div>
+);
+
+// Wire SVG for play section
+const PlayWire: FC<{ x1: number; y1: number; x2: number; y2: number }> = ({ x1, y1, x2, y2 }) => {
+  const cx = (x1 + x2) / 2;
+  return <path d={`M${x1},${y1} C${cx},${y1} ${cx},${y2} ${x2},${y2}`} stroke="rgba(100,140,255,0.3)" strokeWidth={1.2} fill="none" strokeDasharray="4 4" />;
+};
+
+// The full play canvas
+const PlayPage: FC = () => {
+  const [palettePos,  paletteDrag]  = usePlayDrag({ x: 30,  y: 20  });
+  const [moodPos,     moodDrag]     = usePlayDrag({ x: 340, y: 20  });
+  const [readPos,     readDrag]     = usePlayDrag({ x: 640, y: 20  });
+  const [quotePos,    quoteDrag]    = usePlayDrag({ x: 30,  y: 300 });
+  const [pastaPos,    pastaDrag]    = usePlayDrag({ x: 380, y: 280 });
+
+  const [paletteIdx, setPaletteIdx] = useState(0);
+  const [moodIdx,    setMoodIdx]    = useState(0);
+  const [readIdx,    setReadIdx]    = useState(0);
+  const [pastaIdx,   setPastaIdx]   = useState(0);
+
+  const PALETTES = [
+    { name: "Sunset Drift",   emoji: "🌅", colors: ["#f97316","#fb923c","#fde68a","#fef3c7"], bg: "linear-gradient(135deg,#fff7ed,#fef3c7)" },
+    { name: "Ocean Depth",    emoji: "🌊", colors: ["#0ea5e9","#38bdf8","#7dd3fc","#e0f2fe"], bg: "linear-gradient(135deg,#f0f9ff,#e0f2fe)" },
+    { name: "Forest Calm",    emoji: "🌿", colors: ["#16a34a","#4ade80","#86efac","#dcfce7"], bg: "linear-gradient(135deg,#f0fdf4,#dcfce7)" },
+    { name: "Midnight",       emoji: "🌙", colors: ["#6366f1","#818cf8","#a5b4fc","#e0e7ff"], bg: "linear-gradient(135deg,#eef2ff,#e0e7ff)" },
+    { name: "Rose Blush",     emoji: "🌸", colors: ["#f43f5e","#fb7185","#fda4af","#ffe4e6"], bg: "linear-gradient(135deg,#fff1f2,#ffe4e6)" },
+  ];
+
+  const MOODS = [
+    { name: "Deep Focus",    emoji: "🎧", sub: "Aphex Twin · Brian Eno",   color: "#6366f1", bg: "linear-gradient(135deg,#eef2ff,#e0e7ff)" },
+    { name: "Late Night",    emoji: "🌃", sub: "Chet Baker · Miles Davis",  color: "#0ea5e9", bg: "linear-gradient(135deg,#f0f9ff,#dbeafe)" },
+    { name: "Morning Flow",  emoji: "☀️", sub: "Nils Frahm · Ólafur Arnalds",color:"#f59e0b",bg:"linear-gradient(135deg,#fffbeb,#fef3c7)"},
+    { name: "Creative High", emoji: "⚡", sub: "Jungle · Tame Impala",      color: "#ec4899", bg: "linear-gradient(135deg,#fdf2f8,#fce7f3)" },
+  ];
+
+  const READS = [
+    { name: "The Design of Everyday Things", emoji: "📐", sub: "Don Norman", color: "#0ea5e9", bg: "linear-gradient(135deg,#f0f9ff,#dbeafe)" },
+    { name: "Thinking Fast & Slow",          emoji: "🧠", sub: "Kahneman",  color: "#8b5cf6", bg: "linear-gradient(135deg,#f5f3ff,#ede9fe)" },
+    { name: "Ways of Seeing",                emoji: "👁",  sub: "John Berger",color:"#10b981", bg:"linear-gradient(135deg,#f0fdf4,#dcfce7)"},
+    { name: "The Pale King",                 emoji: "📖", sub: "D.F. Wallace",color:"#f59e0b", bg:"linear-gradient(135deg,#fffbeb,#fef3c7)"},
+  ];
+
+  const PASTAS = [
+    { name: "Cacio e Pepe",   emoji: "🍝", color: "#c8943a", bg: "linear-gradient(135deg,#fffbeb,#fef3c7)" },
+    { name: "Lasagna",        emoji: "🫕", color: "#b8402a", bg: "linear-gradient(135deg,#fff1f2,#ffe4e6)" },
+    { name: "Pesto Fusilli",  emoji: "🌿", color: "#3a8840", bg: "linear-gradient(135deg,#f0fdf4,#dcfce7)" },
+    { name: "Penne Arrabb.",  emoji: "🌶️", color: "#c03020", bg: "linear-gradient(135deg,#fff7ed,#fee2e2)" },
+  ];
+
+  const curPalette = PALETTES[paletteIdx];
+  const curMood    = MOODS[moodIdx];
+  const curRead    = READS[readIdx];
+  const curPasta   = PASTAS[pastaIdx];
+
+  const Dots = ({ len, idx, color, set }: { len: number; idx: number; color: string; set: (i: number) => void }) => (
+    <div style={{ display: "flex", justifyContent: "center", gap: 5, padding: "8px 14px", borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+      {Array.from({ length: len }, (_, i) => (
+        <div key={i} onClick={() => set(i)} style={{ width: i === idx ? 16 : 6, height: 6, borderRadius: 3, background: i === idx ? color : "rgba(0,0,0,0.12)", transition: "width 0.3s, background 0.3s" }} />
+      ))}
+    </div>
+  );
+
+  return (
+    <div style={{ position: "relative", width: "100%", height: "calc(100vh - 160px)", overflow: "hidden", background: "linear-gradient(160deg,#f8f9ff 0%,#f0f4ff 50%,#f8f0ff 100%)", borderRadius: 16, border: "1px solid rgba(200,210,255,0.4)" }}>
+      <style>{`
+        @keyframes playNodeIn { from { opacity:0; transform:translateY(12px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+      `}</style>
+
+      {/* soft dot grid */}
+      <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(100,120,255,0.08) 1px, transparent 1px)", backgroundSize: "24px 24px", pointerEvents: "none" }} />
+
+      {/* wires */}
+      <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 5 }}>
+        <PlayWire x1={palettePos.x + 280} y1={palettePos.y + 110} x2={moodPos.x}      y2={moodPos.y + 110} />
+        <PlayWire x1={moodPos.x + 290}    y1={moodPos.y + 110}    x2={readPos.x}      y2={readPos.y + 110} />
+        <PlayWire x1={palettePos.x + 140} y1={palettePos.y + 220} x2={quotePos.x+160} y2={quotePos.y} />
+        <PlayWire x1={moodPos.x + 145}    y1={moodPos.y + 220}    x2={pastaPos.x+140} y2={pastaPos.y} />
+      </svg>
+
+      {/* Palette card */}
+      <PlayNode pos={palettePos} drag={paletteDrag} width={280} label="Colour Palette" icon="◐" accent delay={0}>
+        <div style={{ padding: "18px 16px", background: curPalette.bg, transition: "background 0.5s", cursor: "pointer" }}
+          onClick={() => setPaletteIdx(i => (i + 1) % PALETTES.length)}>
+          <div style={{ fontSize: 36, marginBottom: 10 }}>{curPalette.emoji}</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#111", letterSpacing: "-0.01em", marginBottom: 10 }}>{curPalette.name}</div>
+          <div style={{ display: "flex", gap: 6 }}>
+            {curPalette.colors.map((c, i) => (
+              <div key={i} style={{ flex: 1, height: 28, borderRadius: 6, background: c, transition: "background 0.4s", boxShadow: "0 1px 4px rgba(0,0,0,0.1)" }} />
+            ))}
+          </div>
+          <div style={{ fontSize: 9, color: "rgba(0,0,0,0.3)", marginTop: 8, fontFamily: "'DM Mono',monospace", letterSpacing: "0.06em" }}>tap to change →</div>
+        </div>
+        <Dots len={PALETTES.length} idx={paletteIdx} color={curPalette.colors[0]} set={setPaletteIdx} />
+      </PlayNode>
+
+      {/* Mood / Music card */}
+      <PlayNode pos={moodPos} drag={moodDrag} width={290} label="Music Mood" icon="♪" delay={0.08}>
+        <div style={{ padding: "18px 16px", background: curMood.bg, transition: "background 0.5s", cursor: "pointer", minHeight: 120 }}
+          onClick={() => setMoodIdx(i => (i + 1) % MOODS.length)}>
+          <div style={{ fontSize: 36, marginBottom: 8 }}>{curMood.emoji}</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: curMood.color, letterSpacing: "-0.01em", marginBottom: 4, transition: "color 0.3s" }}>{curMood.name}</div>
+          <div style={{ fontSize: 10, color: "rgba(0,0,0,0.4)", fontFamily: "'DM Mono',monospace", letterSpacing: "0.03em" }}>{curMood.sub}</div>
+          <div style={{ fontSize: 9, color: "rgba(0,0,0,0.25)", marginTop: 10, fontFamily: "'DM Mono',monospace", letterSpacing: "0.06em" }}>tap to change →</div>
+        </div>
+        <Dots len={MOODS.length} idx={moodIdx} color={curMood.color} set={setMoodIdx} />
+      </PlayNode>
+
+      {/* Reading card */}
+      <PlayNode pos={readPos} drag={readDrag} width={270} label="Reading Stack" icon="◎" delay={0.16}>
+        <div style={{ padding: "18px 16px", background: curRead.bg, transition: "background 0.5s", cursor: "pointer", minHeight: 120 }}
+          onClick={() => setReadIdx(i => (i + 1) % READS.length)}>
+          <div style={{ fontSize: 36, marginBottom: 8 }}>{curRead.emoji}</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: curRead.color, letterSpacing: "-0.01em", lineHeight: 1.3, marginBottom: 4, transition: "color 0.3s" }}>{curRead.name}</div>
+          <div style={{ fontSize: 10, color: "rgba(0,0,0,0.4)", fontFamily: "'DM Mono',monospace" }}>{curRead.sub}</div>
+          <div style={{ fontSize: 9, color: "rgba(0,0,0,0.25)", marginTop: 10, fontFamily: "'DM Mono',monospace", letterSpacing: "0.06em" }}>tap to change →</div>
+        </div>
+        <Dots len={READS.length} idx={readIdx} color={curRead.color} set={setReadIdx} />
+      </PlayNode>
+
+      {/* Writing quote node */}
+      <PlayNode pos={quotePos} drag={quoteDrag} width={320} label="Writing" icon="✎" delay={0.24}>
+        <div style={{ padding: "18px 20px" }}>
+          <div style={{ fontSize: 13, fontStyle: "italic", color: "#555", lineHeight: 1.85, paddingLeft: 14, borderLeft: "2px solid rgba(100,140,255,0.3)", fontFamily: "'DM Serif Display',Georgia,serif", marginBottom: 14 }}>
+            "I write literary fiction — stories about how people make sense of uncertainty, how trust forms in the dark."
+          </div>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" as const }}>
+            {["Literary Fiction","Narrative","Trust"].map(t => (
+              <span key={t} style={{ background: "rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 4, padding: "2px 8px", fontSize: 10, color: "#888", fontFamily: "'DM Mono',monospace" }}>{t}</span>
+            ))}
+          </div>
+        </div>
+      </PlayNode>
+
+      {/* Pasta card */}
+      <PlayNode pos={pastaPos} drag={pastaDrag} width={260} label="Pasta Lover" icon="🍝" delay={0.32}>
+        <div style={{ padding: "18px 16px", background: curPasta.bg, minHeight: 120, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, transition: "background 0.5s", cursor: "pointer" }}
+          onClick={() => setPastaIdx(i => (i + 1) % PASTAS.length)}>
+          <span style={{ fontSize: 48, lineHeight: 1 }}>{curPasta.emoji}</span>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: curPasta.color, letterSpacing: "-0.01em", transition: "color 0.3s" }}>{curPasta.name}</div>
+            <div style={{ fontSize: 9, color: curPasta.color + "88", marginTop: 3, fontFamily: "'DM Mono',monospace", letterSpacing: "0.06em" }}>tap to change →</div>
+          </div>
+        </div>
+        <Dots len={PASTAS.length} idx={pastaIdx} color={curPasta.color} set={setPastaIdx} />
+      </PlayNode>
+
+      <div style={{ position: "absolute", bottom: 14, left: 16, fontFamily: "'DM Mono',monospace", fontSize: 9, color: "rgba(0,0,0,0.2)", letterSpacing: "0.12em", textTransform: "uppercase", userSelect: "none", pointerEvents: "none" }}>drag to explore</div>
+      <div style={{ position: "absolute", bottom: 14, right: 16, fontFamily: "'DM Mono',monospace", fontSize: 9, color: "rgba(0,0,0,0.2)", letterSpacing: "0.08em", userSelect: "none", pointerEvents: "none" }}>5 nodes · 5 connections</div>
+    </div>
+  );
+};
+
 // ─── Root ─────────────────────────────────────────────────────────────────────
 
 type SectionId = "work" | "about" | "play" | "gallery";
+
+const PRONUN_COLORS = [
+  { bg:"rgba(255,255,255,0.55)", border:"rgba(180,180,200,0.35)", flower:"#c8b8f0", text:"#aaa" },
+  { bg:"rgba(255,235,245,0.65)", border:"rgba(220,130,170,0.3)",  flower:"#e87ab0", text:"#c06090" },
+  { bg:"rgba(230,245,255,0.65)", border:"rgba(100,160,230,0.3)",  flower:"#70aaee", text:"#5580cc" },
+  { bg:"rgba(230,255,240,0.65)", border:"rgba(80,190,130,0.3)",   flower:"#50c888", text:"#2a9a60" },
+  { bg:"rgba(255,248,225,0.65)", border:"rgba(220,180,60,0.3)",   flower:"#e8c040", text:"#b08010" },
+  { bg:"rgba(255,235,228,0.65)", border:"rgba(230,120,80,0.3)",   flower:"#f07050", text:"#c04830" },
+];
 
 const MiaoLanPortfolio: FC = () => {
   const [activeSection,   setActiveSection]   = useState<SectionId>("work");
   const [showSplash,      setShowSplash]      = useState<boolean>(true);
   const [cursorProjectId, setCursorProjectId] = useState<number | null>(null);
   const [cursorPos,       setCursorPos]       = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [pronunColorIdx,  setPronunColorIdx]  = useState<number>(0);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, section: SectionId): void => {
     e.preventDefault(); setActiveSection(section);
@@ -731,25 +1103,30 @@ const MiaoLanPortfolio: FC = () => {
       <CustomCursor projectId={cursorProjectId} x={cursorPos.x} y={cursorPos.y} />
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@300;400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@300;400&family=Inter:wght@300;400;500;600;700&display=swap');
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-        html,body{margin:0;padding:0;width:100%;overflow-x:hidden;}
-        body{background:linear-gradient(to top,#ede5ff 0%,#ffffff 32%);min-height:100vh;color:#111;}
+        html,body{margin:0 !important;padding:0 !important;width:100% !important;min-height:100vh;overflow-x:hidden;cursor:none !important;}
+        body{display:block !important;background:#ffffff;color:#111;}
+        #root{display:block !important;width:100% !important;margin:0 !important;padding:0 !important;max-width:none !important;overflow-x:hidden;}
+        *{cursor:none !important;}
         @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
         @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+        @keyframes clipGlow{0%,100%{opacity:0.6;transform:scale(1)}50%{opacity:1;transform:scale(1.15)}}
         .nav-link{font-family:'DM Mono',monospace;font-size:12px;color:#999;text-decoration:none;transition:color 0.2s;letter-spacing:0.02em;}
         .nav-link:hover{color:#111;}.nav-link.active{color:#111;}
-        .project-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px 32px;}
+        .project-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px 40px;width:100%;}
         @media(max-width:680px){.project-grid{grid-template-columns:1fr;}}
         .footer-link{font-family:'DM Mono',monospace;font-size:11px;color:#999;text-decoration:none;letter-spacing:0.08em;transition:color 0.2s;text-transform:uppercase;}
         .footer-link:hover{color:#111;}
         .ascii-art{font-family:'DM Mono',monospace;font-size:10px;color:#c8c4bc;line-height:1.6;white-space:pre-wrap;word-break:break-all;max-width:100%;overflow:hidden;animation:fadeIn 1.2s ease 0.8s forwards;opacity:0;}
       `}</style>
 
-      <div style={{minHeight:"100vh",background:"linear-gradient(to top,#ede5ff 0%,#ffffff 32%)",fontFamily:"'DM Sans','Helvetica Neue',sans-serif",textAlign:"left"}}>
+      <div style={{width:"100%",minHeight:"100vh",background:"#ffffff",fontFamily:"'DM Sans','Helvetica Neue',sans-serif",overflowX:"hidden"}}
+        onMouseMove={(e) => setCursorPos({ x: e.clientX, y: e.clientY })}>
+      <div style={{maxWidth:"1200px",margin:"0 auto",padding:"0 30px",boxSizing:"border-box"}}>
 
         {/* NAV */}
-        <nav style={{position:"sticky",top:0,zIndex:100,background:"transparent",padding:"0 24px",height:"52px",display:"flex",alignItems:"center",justifyContent:"space-between",animation:"fadeIn 0.5s ease forwards"}}>
+        <nav style={{position:"sticky",top:0,zIndex:100,background:"#ffffff",padding:"0",height:"52px",display:"flex",alignItems:"center",justifyContent:"space-between",animation:"fadeIn 0.5s ease forwards",width:"100%"}}>
           <a href="#" onClick={(e)=>{e.preventDefault();setActiveSection("work");}} style={{display:"flex",alignItems:"center",textDecoration:"none"}}><ScribbleM /></a>
           <div style={{display:"flex",gap:"28px",alignItems:"center"}}>
             {(["work","gallery","play","about"] as SectionId[]).map(item=>(
@@ -759,40 +1136,63 @@ const MiaoLanPortfolio: FC = () => {
         </nav>
 
         {/* MAIN */}
-        <main style={{maxWidth:"none",margin:"0",padding:"60px 24px 100px"}}>
+        <main style={{width:"100%",margin:"0",padding:"60px 0 100px",overflowX:"hidden"}}>
           <div style={{marginBottom:"48px",opacity:0,animation:"fadeIn 0.5s ease 0.1s forwards",textAlign:"left"}}>
-            <h1 style={{fontFamily:"'DM Sans',sans-serif",fontSize:"22px",fontWeight:400,color:"#111",letterSpacing:"-0.02em",marginBottom:"6px",lineHeight:1.3,textAlign:"left"}}>
-              Miao Lan <span style={{fontStyle:"italic",color:"#888",fontSize:"14px",fontWeight:300}}>/mee-ow lɑːn/</span> Zhang
+            <h1 style={{fontFamily:"'Inter',sans-serif",fontSize:"36px",fontWeight:600,color:"#111",letterSpacing:"-0.03em",marginBottom:"6px",lineHeight:1.15,textAlign:"left",display:"flex",alignItems:"center",flexWrap:"wrap",gap:"10px"}}>
+              miao lan
+              <span
+                onClick={() => setPronunColorIdx(i => (i + 1) % PRONUN_COLORS.length)}
+                style={{
+                  display:"inline-flex",alignItems:"center",gap:"6px",
+                  background:PRONUN_COLORS[pronunColorIdx].bg,
+                  border:`1px solid ${PRONUN_COLORS[pronunColorIdx].border}`,
+                  backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",
+                  borderRadius:"999px",
+                  padding:"4px 14px 4px 10px",
+                  boxShadow:"0 2px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8)",
+                  cursor:"pointer",
+                  transition:"background 0.4s ease, border-color 0.4s ease",
+                  userSelect:"none",
+                }}>
+                <span style={{fontSize:"18px",lineHeight:1,transition:"color 0.4s ease",color:PRONUN_COLORS[pronunColorIdx].flower}}>✿</span>
+                <span style={{fontSize:"18px",fontWeight:400,fontFamily:"'Inter',sans-serif",letterSpacing:"0em",transition:"color 0.4s ease",color:PRONUN_COLORS[pronunColorIdx].text}}>/mee-ow lɑːn/</span>
+              </span>
+              zhang
             </h1>
-            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:"14px",color:"#777",fontWeight:300,letterSpacing:"0.01em",textAlign:"left"}}>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:"16px",color:"#777",fontWeight:300,letterSpacing:"0.01em",textAlign:"left"}}>
               I design simple experiences for complex systems.
             </p>
           </div>
 
           {activeSection === "gallery" ? (
             <GalleryPage />
+          ) : activeSection === "play" ? (
+            <div style={{opacity:0,animation:"fadeIn 0.5s ease 0.1s forwards"}}>
+              <p style={{fontFamily:"'DM Mono',monospace",fontSize:"11px",color:"#bbb",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"20px",textAlign:"left"}}>generative play</p>
+              <PlayPage />
+            </div>
           ) : activeSection === "about" ? (
-            <div style={{opacity:0,animation:"fadeIn 0.5s ease 0.1s forwards",maxWidth:"560px"}}>
+            <div style={{opacity:0,animation:"fadeIn 0.5s ease 0.1s forwards",maxWidth:"560px",textAlign:"left"}}>
               <div style={{marginBottom:"48px"}}>
-                <p style={{fontFamily:"'DM Mono',monospace",fontSize:"11px",color:"#bbb",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"20px"}}>more about me</p>
-                <p style={{fontSize:"14px",color:"#444",lineHeight:1.75,fontWeight:300,marginBottom:"16px"}}>Hello! 👋🏻 I'm Miao Lan, a product designer, builder, and design strategist with over three years of experience, working on a variety of software projects.</p>
-                <p style={{fontSize:"14px",color:"#444",lineHeight:1.75,fontWeight:300,marginBottom:"16px"}}>I don't have a clear label for what kind of designer I am. I enjoy building. I enjoy experimenting. I enjoy thinking. What I have is a set of questions I keep returning to. A deep suspicion. A stubborn belief that the emotional layer of a product carries weight.</p>
-                <p style={{fontSize:"14px",color:"#444",lineHeight:1.75,fontWeight:300}}>I've always been more interested in the <em>why</em> behind things than the <em>what</em>. Why does someone hesitate before trusting an AI suggestion? Why does one interaction feel collaborative while another feels like a form to fill?</p>
+                <p style={{fontFamily:"'DM Mono',monospace",fontSize:"11px",color:"#bbb",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"20px",textAlign:"left"}}>more about me</p>
+                <p style={{fontSize:"16px",color:"#444",lineHeight:1.65,fontWeight:300,marginBottom:"16px",textAlign:"left"}}>Hello! 👋🏻 I'm Miao Lan, a product designer, builder, and design strategist with over three years of experience, working on a variety of software projects.</p>
+                <p style={{fontSize:"16px",color:"#444",lineHeight:1.65,fontWeight:300,marginBottom:"16px",textAlign:"left"}}>I don't have a clear label for what kind of designer I am. I enjoy building. I enjoy experimenting. I enjoy thinking. What I have is a set of questions I keep returning to. A deep suspicion. A stubborn belief that the emotional layer of a product carries weight.</p>
+                <p style={{fontSize:"16px",color:"#444",lineHeight:1.65,fontWeight:300,textAlign:"left"}}>I've always been more interested in the <em>why</em> behind things than the <em>what</em>. Why does someone hesitate before trusting an AI suggestion? Why does one interaction feel collaborative while another feels like a form to fill?</p>
               </div>
               <div style={{marginBottom:"48px"}}>
-                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:"14px",fontWeight:500,color:"#111",letterSpacing:"-0.01em",marginBottom:"14px"}}>The Problem With Knowing What You're Designing</p>
-                <p style={{fontSize:"14px",color:"#444",lineHeight:1.75,fontWeight:300,marginBottom:"16px"}}>There's a version of design work that feels very clean. Someone hands you a brief. You understand the user, you know the goal, you make the thing. It's satisfying in the way that solving a math problem is satisfying.</p>
-                <p style={{fontSize:"14px",color:"#444",lineHeight:1.75,fontWeight:300}}>The best design problems I've worked on are the ones that, at the start, I couldn't fully articulate. Where the "user problem" on the surface is really just a symptom of something else happening underneath.</p>
+                <p style={{fontFamily:"'Inter',sans-serif",fontSize:"20px",fontWeight:600,color:"#111",letterSpacing:"-0.02em",marginBottom:"14px",textAlign:"left"}}>The Problem With Knowing What You're Designing</p>
+                <p style={{fontSize:"16px",color:"#444",lineHeight:1.65,fontWeight:300,marginBottom:"16px",textAlign:"left"}}>There's a version of design work that feels very clean. Someone hands you a brief. You understand the user, you know the goal, you make the thing. It's satisfying in the way that solving a math problem is satisfying.</p>
+                <p style={{fontSize:"16px",color:"#444",lineHeight:1.65,fontWeight:300,textAlign:"left"}}>The best design problems I've worked on are the ones that, at the start, I couldn't fully articulate. Where the "user problem" on the surface is really just a symptom of something else happening underneath.</p>
               </div>
               <div style={{marginBottom:"48px"}}>
-                <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:"14px",fontWeight:500,color:"#111",letterSpacing:"-0.01em",marginBottom:"14px"}}>AI in Design</p>
-                <p style={{fontSize:"14px",color:"#444",lineHeight:1.75,fontWeight:300,marginBottom:"16px"}}>Designing for agentic systems means thinking about how autonomy is shared. Philosophers call this <em>epistemic dependence</em>: most of what we know, we know because we trust a chain of other knowers. AI introduces a new link in that chain.</p>
-                <p style={{fontSize:"14px",color:"#444",lineHeight:1.75,fontWeight:300}}>This is the design problem that excites me most. What people believe knowledge is. How people think, act, and reason with AI at scale.</p>
+                <p style={{fontFamily:"'Inter',sans-serif",fontSize:"20px",fontWeight:600,color:"#111",letterSpacing:"-0.02em",marginBottom:"14px",textAlign:"left"}}>AI in Design</p>
+                <p style={{fontSize:"16px",color:"#444",lineHeight:1.65,fontWeight:300,marginBottom:"16px",textAlign:"left"}}>Designing for agentic systems means thinking about how autonomy is shared. Philosophers call this <em>epistemic dependence</em>: most of what we know, we know because we trust a chain of other knowers. AI introduces a new link in that chain.</p>
+                <p style={{fontSize:"16px",color:"#444",lineHeight:1.65,fontWeight:300,textAlign:"left"}}>This is the design problem that excites me most. What people believe knowledge is. How people think, act, and reason with AI at scale.</p>
               </div>
             </div>
           ) : (
             <>
-              <div style={{marginBottom:"32px",opacity:0,animation:"fadeIn 0.5s ease 0.2s forwards"}}>
+              <div style={{marginBottom:"32px",opacity:0,animation:"fadeIn 0.5s ease 0.2s forwards",textAlign:"left"}}>
                 <span style={{fontFamily:"'DM Mono',monospace",fontSize:"11px",color:"#bbb",letterSpacing:"0.1em",textTransform:"uppercase"}}>selected work</span>
               </div>
               <div className="project-grid">
@@ -813,8 +1213,8 @@ const MiaoLanPortfolio: FC = () => {
 
         {/* FOOTER */}
         <footer style={{borderTop:"1px solid rgba(0,0,0,0.07)",background:"transparent"}}>
-          <div style={{padding:"32px 24px 24px",overflow:"hidden"}}><p className="ascii-art">{ASCII_TREES}</p></div>
-          <div style={{padding:"24px 24px 40px",display:"flex",flexWrap:"wrap",justifyContent:"space-between",alignItems:"flex-end",gap:"32px",animation:"fadeIn 0.8s ease 1s forwards",opacity:0}}>
+          <div style={{padding:"32px 7px 24px",overflow:"hidden"}}><p className="ascii-art">{ASCII_TREES}</p></div>
+          <div style={{padding:"24px 7px 40px",display:"flex",flexWrap:"wrap",justifyContent:"space-between",alignItems:"flex-end",gap:"32px",animation:"fadeIn 0.8s ease 1s forwards",opacity:0}}>
             <div>
               <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:"12px",color:"#aaa",fontStyle:"italic",marginBottom:"6px",letterSpacing:"0.01em"}}>Design is making complexity feel simple.</p>
               <p style={{fontFamily:"'DM Mono',monospace",fontSize:"10px",color:"#ccc",letterSpacing:"0.05em"}}>made with &lt;3 and lots of coffee</p>
@@ -830,6 +1230,7 @@ const MiaoLanPortfolio: FC = () => {
             </div>
           </div>
         </footer>
+      </div>
       </div>
     </>
   );
