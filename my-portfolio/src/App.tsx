@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import type { FC, CSSProperties } from "react";
 import aatcImg from "./assets/aatc.png";
 import asset05Img from "./assets/asset05.png";
 import ebayVideo from "./assets/ebay-01.mp4";
@@ -272,8 +273,7 @@ interface CustomCursorProps {
   x: number;
   y: number;
 }
-
-const CustomCursor: FC<CustomCursorProps> = ({ projectId, x, y }) => {
+const CustomCursor = ({ projectId, x, y }: CustomCursorProps) => {
   const [visible, setVisible]   = useState(false);
   const [pos, setPos]           = useState({ x: 0, y: 0 });
   const rafRef                  = useRef<number>(0);
@@ -353,7 +353,7 @@ function smoothNoise(x: number, y: number, t: number): number {
 
 // ─── Gallery Sketches ─────────────────────────────────────────────────────────
 
-const FlowField: FC = () => {
+function FlowField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = canvasRef.current; if (!canvas) return;
