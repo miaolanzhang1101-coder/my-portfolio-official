@@ -545,9 +545,9 @@ const DesignSystemSketch: FC = () => {
   return (
     <div style={{width:"100%",height:"100%",background:"#fff",display:"flex",flexDirection:"column",padding:"20px",fontFamily:"'DM Mono',monospace",gap:"14px"}}>
       <span style={{fontSize:"9px",color:"#bbb",letterSpacing:"0.1em",textTransform:"uppercase"}}>Design System</span>
-      {/* token row */}
+      {/* token row — 'i' removed from map callback */}
       <div style={{display:"flex",gap:"6px",alignItems:"center"}}>
-        {["#111","#3333ee","#7a6fff","#ebebeb","#fff"].map((c,i) => (
+        {["#111","#3333ee","#7a6fff","#ebebeb","#fff"].map((c) => (
           <div key={c} style={{width:"20px",height:"20px",borderRadius:"50%",background:c,border:c==="#fff"?"1px solid #e8e8e8":"none",flexShrink:0}} />
         ))}
         <span style={{fontSize:"7px",color:"#ccc",fontFamily:"'DM Mono',monospace",marginLeft:"4px"}}>tokens</span>
@@ -639,7 +639,7 @@ const ColorContrastSketch: FC = () => {
       {/* live preview */}
       <div style={{background:cur.bg,border:"1px solid #e8e8e8",borderRadius:"6px",padding:"16px",display:"flex",flexDirection:"column",gap:"4px",flex:1,justifyContent:"center",transition:"background 0.5s"}}>
         <span style={{color:cur.fg,fontSize:"14px",fontWeight:700,letterSpacing:"-0.02em",transition:"color 0.5s"}}>{cur.label}</span>
-        <span style={{color:cur.fg,fontSize:"9px",opacity:0.65,fontFamily:"'DM Mono',monospace",transition:"color 0.5s"}}>The quick brown fox jumps</span>
+        <span style={{color:cur.fg,fontSize:"9px",opacity:0.65,fontFamily:"'DM Mono',monospace",letterSpacing:"0.03em",transition:"color 0.5s"}}>The quick brown fox jumps</span>
       </div>
       {/* ratio + badge */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
