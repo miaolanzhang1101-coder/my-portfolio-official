@@ -6,6 +6,10 @@ import dashboard6 from "./assets/dashboard6.mp4";
 import tiktoknew from "./assets/tiktoknew.mp4";
 import tencent1 from "./assets/tencent1.mov";
 import fashion from "./assets/fashion.mp4";
+import photoCafe from "./assets/photo_cafe.jpg";
+import photoAward from "./assets/photo_award.jpg";
+import photoHackathon from "./assets/photo_hackathon.jpg";
+import photoApp from "./assets/photo_app.jpg";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -65,7 +69,7 @@ const projects: Project[] = [
     id: 4, tag: "ClipAI", company: null, title: "Automated Video Clipping",
     description: "I initiated a new content creation workflow for automated video clipping.",
     image: null, video: fashion,
-    link: null,
+    link: "https://miaolanzhang.notion.site/ClipAI-31c2080795728096a762c78c32bd7ffa",
     tall: false, date: "fall 2023", tags: ["Creative Workflow Automation"],
   },
   {
@@ -79,7 +83,7 @@ const projects: Project[] = [
     id: 6, tag: "Tencent", company: null, title: "eCommerce Subscription",
     description: "I redesigned the consumer subscription flow for WeChat Stores.",
     image: null, video: tencent1,
-    link: "https://miaolanzhang.notion.site/Tencent-3252080795728008a60bf9b2518c89b1",
+    link: null,
     tall: false, date: "spring 2023", tags: ["Search & Recommendation"],
   },
 ];
@@ -105,8 +109,6 @@ vvv   Y   ^^^^^   .   \\(| ,-   \\|/   (*)   >/
 .   ^^^   @   \\|/   ^^^   .   \\(| ,-   \\|/   \\ | /
 (*)   >/   vVv   (_)   \\|   ^^^^^   vVv   (_)   \\|
 ^^^^^   vVv   (_)   \\|/   ^^^   ..   \\ |/   \\ |/`;
-
-
 
 // ─── Custom Cursor ────────────────────────────────────────────────────────────
 
@@ -148,7 +150,7 @@ const CURSOR_CONFIGS: Record<number, CursorConfig> = {
   },
   6: {
     bg: "rgba(255,100,140,0.13)", border: "rgba(220,70,110,0.48)",
-    glow: "rgba(220,70,110,0.25)", label: "Tencent",
+    glow: "rgba(220,70,110,0.25)", label: "Building",
     labelColor: "rgb(255,255,255)", size: 76, shape: "circle",
   },
 };
@@ -185,17 +187,14 @@ const CustomCursor = ({ projectId, x, y, titleHovered }: CustomCursorProps) => {
   return (
     <>
       <style>{`@keyframes flowerSpin{from{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.15)}to{transform:rotate(360deg) scale(1)}}`}</style>
-      {/* glass dot — shrinks when any hover is active */}
       <div style={{ position:"fixed", left:pos.x-8, top:pos.y-8, width:16, height:16, borderRadius:"50%", background:"rgba(255,255,255,0.55)", border:"1px solid rgba(180,180,200,0.5)", backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)", boxShadow:"0 2px 10px rgba(0,0,0,0.1),inset 0 1px 0 rgba(255,255,255,0.9)", pointerEvents:"none", zIndex:9999, transition:"transform 0.15s ease,opacity 0.2s ease", transform:active?"scale(0.5)":"scale(1)", opacity:active?0.4:1, mixBlendMode:"normal" as const }} />
 
-      {/* flower cursor on title hover */}
       {titleHovered && !cfg && (
         <div style={{ position:"fixed", left:pos.x-24, top:pos.y-24, width:48, height:48, borderRadius:"50%", background:"rgba(255,255,255,0.22)", border:"1px solid rgba(200,180,255,0.5)", backdropFilter:"blur(14px) saturate(1.8)", WebkitBackdropFilter:"blur(14px) saturate(1.8)", boxShadow:"0 0 14px 3px rgba(200,180,255,0.25), inset 0 1px 0 rgba(255,255,255,0.6)", display:"flex", alignItems:"center", justifyContent:"center", pointerEvents:"none", zIndex:9998 }}>
           <span style={{ fontSize:"18px", lineHeight:1, display:"block", animation:"flowerSpin 4s linear infinite", transformOrigin:"center" }}>✿</span>
         </div>
       )}
 
-      {/* project label bubble */}
       {cfg && (
         <div style={{ position:"fixed", left:pos.x-half, top:pos.y-half, width:cfg.size, height:cfg.size, borderRadius:br, background:cfg.bg, border:`1px solid ${cfg.border}`, backdropFilter:"blur(12px) saturate(1.6)", WebkitBackdropFilter:"blur(12px) saturate(1.6)", boxShadow:`0 0 18px 2px ${cfg.glow},inset 0 1px 0 rgba(255,255,255,0.25)`, display:"flex", alignItems:"center", justifyContent:"center", pointerEvents:"none", zIndex:9998 }}>
           <div style={{ position:"absolute", inset:4, borderRadius:br, border:"0.5px solid rgba(255,255,255,0.2)", pointerEvents:"none" }} />
@@ -422,16 +421,11 @@ const DesignThinkingSketch: FC = () => {
     <div style={{width:"100%",height:"100%",background:"#fff",display:"flex",flexDirection:"column",padding:"24px 20px",fontFamily:"'DM Mono',monospace"}}>
       <span style={{fontSize:"9px",color:"#bbb",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"auto"}}>Design Thinking</span>
       <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",gap:"10px"}}>
-        {/* large stage number */}
         <span style={{fontSize:"11px",color:"#3333ee",letterSpacing:"0.08em",fontFamily:"'DM Mono',monospace"}}>{String(active+1).padStart(2,"0")} / {STAGES.length}</span>
-        {/* stage name */}
         <div style={{fontSize:"28px",fontWeight:700,color:"#111",letterSpacing:"-0.03em",lineHeight:1,fontFamily:"'Inter',sans-serif",transition:"all 0.35s"}}>{STAGES[active]}</div>
-        {/* purple rule */}
         <div style={{width:"28px",height:"2px",background:"#3333ee",borderRadius:"1px"}} />
-        {/* description */}
         <div style={{fontSize:"10px",color:"#999",lineHeight:1.65,letterSpacing:"0.01em"}}>{DESC[active]}</div>
       </div>
-      {/* step dots */}
       <div style={{display:"flex",gap:"5px",paddingTop:"16px"}}>
         {STAGES.map((s,i) => (
           <div key={s} style={{flex:i===active?3:1,height:"2px",borderRadius:"2px",background:i===active?"#3333ee":i<active?"#ddd":"#f0f0f0",transition:"all 0.45s cubic-bezier(0.4,0,0.2,1)"}} />
@@ -464,7 +458,6 @@ const UserResearchSketch: FC = () => {
   return (
     <div style={{width:"100%",height:"100%",background:"#fff",display:"flex",flexDirection:"column",padding:"20px",fontFamily:"'DM Mono',monospace",gap:"12px"}}>
       <span style={{fontSize:"9px",color:"#bbb",letterSpacing:"0.1em",textTransform:"uppercase"}}>User Research</span>
-      {/* 2×2 metric grid */}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px"}}>
         {METHODS.map((m,i) => (
           <div key={m.label} style={{background:i===idx?"rgba(51,51,238,0.04)":"#fafafa",border:`1px solid ${i===idx?"rgba(51,51,238,0.25)":"#ebebeb"}`,borderRadius:"6px",padding:"8px 10px",transition:"all 0.35s"}}>
@@ -473,7 +466,6 @@ const UserResearchSketch: FC = () => {
           </div>
         ))}
       </div>
-      {/* insight quote */}
       <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",background:"#fafafa",borderRadius:"6px",border:"1px solid #ebebeb",padding:"12px 14px",gap:"5px"}}>
         <span style={{fontSize:"7px",color:"#3333ee",letterSpacing:"0.1em",textTransform:"uppercase"}}>Key Insight</span>
         <span style={{fontSize:"11px",color:"#333",lineHeight:1.55,fontStyle:"italic",fontFamily:"'DM Serif Display',Georgia,serif"}}>"{INSIGHT[idx]}"</span>
@@ -500,7 +492,6 @@ const FigmaSketch: FC = () => {
   },[]);
   return (
     <div style={{width:"100%",height:"100%",background:"#fff",display:"flex",fontFamily:"'DM Mono',monospace",overflow:"hidden"}}>
-      {/* layers */}
       <div style={{width:"55%",borderRight:"1px solid #f0f0f0",display:"flex",flexDirection:"column"}}>
         <div style={{padding:"8px 10px",borderBottom:"1px solid #f0f0f0",fontSize:"7.5px",color:"#bbb",letterSpacing:"0.08em",textTransform:"uppercase"}}>Layers</div>
         <div style={{flex:1,paddingTop:"4px"}}>
@@ -512,7 +503,6 @@ const FigmaSketch: FC = () => {
           ))}
         </div>
       </div>
-      {/* properties */}
       <div style={{flex:1,display:"flex",flexDirection:"column"}}>
         <div style={{padding:"8px 10px",borderBottom:"1px solid #f0f0f0",fontSize:"7.5px",color:"#bbb",letterSpacing:"0.08em",textTransform:"uppercase"}}>Inspect</div>
         <div style={{padding:"10px",display:"flex",flexDirection:"column",gap:"7px"}}>
@@ -545,20 +535,17 @@ const DesignSystemSketch: FC = () => {
   return (
     <div style={{width:"100%",height:"100%",background:"#fff",display:"flex",flexDirection:"column",padding:"20px",fontFamily:"'DM Mono',monospace",gap:"14px"}}>
       <span style={{fontSize:"9px",color:"#bbb",letterSpacing:"0.1em",textTransform:"uppercase"}}>Design System</span>
-      {/* token row — 'i' removed from map callback */}
       <div style={{display:"flex",gap:"6px",alignItems:"center"}}>
         {["#111","#3333ee","#7a6fff","#ebebeb","#fff"].map((c) => (
           <div key={c} style={{width:"20px",height:"20px",borderRadius:"50%",background:c,border:c==="#fff"?"1px solid #e8e8e8":"none",flexShrink:0}} />
         ))}
         <span style={{fontSize:"7px",color:"#ccc",fontFamily:"'DM Mono',monospace",marginLeft:"4px"}}>tokens</span>
       </div>
-      {/* component chips */}
       <div style={{display:"flex",flexWrap:"wrap" as const,gap:"5px",flex:1,alignContent:"flex-start" as const}}>
         {COMPONENTS.map((c,i) => (
           <div key={c} style={{background:i===active?"#3333ee":"transparent",border:`1px solid ${i===active?"#3333ee":"#e8e8e8"}`,borderRadius:"4px",padding:"5px 10px",fontSize:"9px",color:i===active?"#fff":"#bbb",transition:"all 0.35s cubic-bezier(0.4,0,0.2,1)",fontFamily:"'DM Mono',monospace"}}>{c}</div>
         ))}
       </div>
-      {/* atomic chain */}
       <div style={{display:"flex",alignItems:"center",gap:"6px",paddingTop:"6px",borderTop:"1px solid #f0f0f0"}}>
         {["Atoms","Molecules","Organisms"].map((a,i) => (
           <React.Fragment key={a}>
@@ -636,12 +623,10 @@ const ColorContrastSketch: FC = () => {
   return (
     <div style={{width:"100%",height:"100%",background:"#fff",display:"flex",flexDirection:"column",padding:"20px",fontFamily:"'Inter',sans-serif",gap:"12px"}}>
       <span style={{fontFamily:"'DM Mono',monospace",fontSize:"9px",color:"#bbb",letterSpacing:"0.1em",textTransform:"uppercase"}}>Colour Contrast</span>
-      {/* live preview */}
       <div style={{background:cur.bg,border:"1px solid #e8e8e8",borderRadius:"6px",padding:"16px",display:"flex",flexDirection:"column",gap:"4px",flex:1,justifyContent:"center",transition:"background 0.5s"}}>
         <span style={{color:cur.fg,fontSize:"14px",fontWeight:700,letterSpacing:"-0.02em",transition:"color 0.5s"}}>{cur.label}</span>
         <span style={{color:cur.fg,fontSize:"9px",opacity:0.65,fontFamily:"'DM Mono',monospace",letterSpacing:"0.03em",transition:"color 0.5s"}}>The quick brown fox jumps</span>
       </div>
-      {/* ratio + badge */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <div style={{display:"flex",alignItems:"baseline",gap:"4px"}}>
           <span style={{fontSize:"24px",fontWeight:700,color:"#111",fontFamily:"'DM Mono',monospace"}}>{cur.ratio}</span>
@@ -649,7 +634,6 @@ const ColorContrastSketch: FC = () => {
         </div>
         <div style={{background:isAAA?"#3333ee":"transparent",border:`1px solid ${isAAA?"#3333ee":"#e8e8e8"}`,borderRadius:"4px",padding:"3px 10px",fontSize:"8px",color:isAAA?"#fff":"#bbb",fontFamily:"'DM Mono',monospace",letterSpacing:"0.06em"}}>{cur.level}</div>
       </div>
-      {/* bar */}
       <div style={{height:"2px",background:"#f0f0f0",borderRadius:"2px",overflow:"hidden"}}>
         <div style={{height:"100%",width:`${Math.min(100,(cur.ratio/21)*100)}%`,background:"#3333ee",borderRadius:"2px",transition:"width 0.6s cubic-bezier(0.4,0,0.2,1)"}} />
       </div>
@@ -677,7 +661,6 @@ const ScreenReaderSketch: FC = () => {
   return (
     <div style={{width:"100%",height:"100%",background:"#fff",display:"flex",flexDirection:"column",padding:"20px",fontFamily:"'DM Mono',monospace",gap:"10px"}}>
       <span style={{fontSize:"9px",color:"#bbb",letterSpacing:"0.1em",textTransform:"uppercase"}}>Screen Reader</span>
-      {/* tree */}
       <div style={{display:"flex",flexDirection:"column",gap:"2px",flex:1}}>
         {NODES.map((n,i) => (
           <div key={n.label} style={{display:"flex",alignItems:"center",gap:"6px",padding:"5px 8px",paddingLeft:`${8+n.depth*14}px`,borderRadius:"4px",background:i===focused?"rgba(51,51,238,0.04)":"transparent",border:`1px solid ${i===focused?"rgba(51,51,238,0.2)":"transparent"}`,transition:"all 0.3s"}}>
@@ -687,11 +670,141 @@ const ScreenReaderSketch: FC = () => {
           </div>
         ))}
       </div>
-      {/* sr output */}
       <div style={{background:"rgba(51,51,238,0.04)",border:"1px solid rgba(51,51,238,0.15)",borderRadius:"6px",padding:"10px 12px",display:"flex",flexDirection:"column",gap:"3px"}}>
         <span style={{fontSize:"7px",color:"#3333ee",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:"2px"}}>Reading aloud</span>
         <span style={{fontSize:"10px",color:"#111",fontWeight:600}}>{cur.label}</span>
         <span style={{fontSize:"7.5px",color:"#bbb"}}>{cur.aria}</span>
+      </div>
+    </div>
+  );
+};
+
+// ─── ProtoPieSketch ───────────────────────────────────────────────────────────
+
+const ProtoPieSketch: FC = () => {
+  const TRIGGERS = [
+    { event: "Tap",    response: "Scale 1.0 → 1.08",    color: "#3333ee" },
+    { event: "Drag",   response: "Translate X + Y",      color: "#7a6fff" },
+    { event: "Scroll", response: "Opacity 1.0 → 0.0",    color: "#3333ee" },
+    { event: "Swipe",  response: "Navigate → Detail",    color: "#5555cc" },
+  ];
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setActive(i => (i + 1) % TRIGGERS.length), 1800);
+    return () => clearInterval(id);
+  }, []);
+  const cur = TRIGGERS[active];
+  return (
+    <div style={{ width:"100%", height:"100%", background:"#fff", display:"flex", flexDirection:"column", padding:"20px", fontFamily:"'DM Mono',monospace", gap:"10px" }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+        <span style={{ fontSize:"9px", color:"#bbb", letterSpacing:"0.1em", textTransform:"uppercase" }}>ProtoPie</span>
+        <span style={{ fontSize:"8px", background:"rgba(51,51,238,0.08)", color:"#3333ee", borderRadius:"4px", padding:"2px 8px" }}>Interaction</span>
+      </div>
+      <div style={{ display:"flex", gap:"8px", flex:1 }}>
+        <div style={{ flex:1, display:"flex", flexDirection:"column", gap:"4px" }}>
+          <span style={{ fontSize:"7px", color:"#ccc", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:"2px" }}>Trigger</span>
+          {TRIGGERS.map((t, i) => (
+            <div key={t.event} style={{ padding:"6px 8px", borderRadius:"4px", border:`1px solid ${i === active ? "rgba(51,51,238,0.3)" : "#ebebeb"}`, background: i === active ? "rgba(51,51,238,0.04)" : "#fafafa", fontSize:"8px", color: i === active ? "#3333ee" : "#bbb", transition:"all 0.3s" }}>{t.event}</div>
+          ))}
+        </div>
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"center", width:"20px" }}>
+          <div style={{ width:"100%", height:"1px", background:"#e0e0e0", position:"relative" }}>
+            <div style={{ position:"absolute", top:"-3px", right:"-3px", width:0, height:0, borderTop:"3px solid transparent", borderBottom:"3px solid transparent", borderLeft:`6px solid ${cur.color}`, transition:"border-left-color 0.3s" }} />
+          </div>
+        </div>
+        <div style={{ flex:1, display:"flex", flexDirection:"column", gap:"4px" }}>
+          <span style={{ fontSize:"7px", color:"#ccc", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:"2px" }}>Response</span>
+          <div style={{ padding:"6px 8px", borderRadius:"4px", border:`1px solid ${cur.color}44`, background:`${cur.color}08`, fontSize:"8px", color: cur.color, transition:"all 0.35s", flex:1 }}>{cur.response}</div>
+        </div>
+      </div>
+      <div style={{ height:"2px", background:"#f0f0f0", borderRadius:"2px", overflow:"hidden" }}>
+        <div style={{ height:"100%", width:`${((active + 1) / TRIGGERS.length) * 100}%`, background:"#3333ee", borderRadius:"2px", transition:"width 0.45s ease" }} />
+      </div>
+    </div>
+  );
+};
+
+// ─── FramerSketch ─────────────────────────────────────────────────────────────
+
+const FramerSketch: FC = () => {
+  const VARIANTS = [
+    { name: "Default", props: "opacity: 1 · scale: 1"    },
+    { name: "Hover",   props: "scale: 1.05 · y: -2px"    },
+    { name: "Tap",     props: "scale: 0.97 · opacity: .9" },
+    { name: "Focus",   props: "outline: 2px · ring: blue" },
+  ];
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setActive(i => (i + 1) % VARIANTS.length), 1700);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div style={{ width:"100%", height:"100%", background:"#fff", display:"flex", flexDirection:"column", padding:"20px", fontFamily:"'DM Mono',monospace", gap:"12px" }}>
+      <div style={{ display:"flex", justifyContent:"space-between" }}>
+        <span style={{ fontSize:"9px", color:"#bbb", letterSpacing:"0.1em", textTransform:"uppercase" }}>Framer Motion</span>
+        <span style={{ fontSize:"8px", background:"rgba(0,0,0,0.04)", color:"#888", borderRadius:"4px", padding:"2px 8px" }}>animate=</span>
+      </div>
+      <div style={{ background:"#fafafa", border:"1px solid #ebebeb", borderRadius:"8px", padding:"16px", display:"flex", alignItems:"center", justifyContent:"center", flex:1 }}>
+        <div style={{
+          width:"72px", height:"40px", background:"#3333ee", borderRadius:"8px",
+          display:"flex", alignItems:"center", justifyContent:"center",
+          fontSize:"9px", color:"#fff", letterSpacing:"0.06em",
+          transform: active === 1 ? "scale(1.05) translateY(-2px)" : active === 2 ? "scale(0.97)" : "scale(1)",
+          opacity: active === 2 ? 0.9 : 1,
+          outline: active === 3 ? "2px solid rgba(51,51,238,0.5)" : "none",
+          outlineOffset: "3px",
+          transition:"all 0.35s cubic-bezier(0.34,1.56,0.64,1)",
+        }}>Button</div>
+      </div>
+      <div style={{ display:"flex", gap:"4px" }}>
+        {VARIANTS.map((v, i) => (
+          <div key={v.name} style={{ flex:1, padding:"5px 6px", borderRadius:"4px", background: i === active ? "#3333ee" : "#f5f5f5", color: i === active ? "#fff" : "#bbb", fontSize:"7px", textAlign:"center" as const, transition:"all 0.3s" }}>{v.name}</div>
+        ))}
+      </div>
+      <div style={{ background:"rgba(51,51,238,0.04)", border:"1px solid rgba(51,51,238,0.15)", borderRadius:"4px", padding:"6px 10px", fontSize:"7.5px", color:"#3333ee", transition:"all 0.35s" }}>{VARIANTS[active].props}</div>
+    </div>
+  );
+};
+
+// ─── CursorAISketch ───────────────────────────────────────────────────────────
+
+const CursorAISketch: FC = () => {
+  const STEPS = [
+    { label: "Prompt",   line: "Design a subscription modal with...", color: "#888"    },
+    { label: "Generate", line: "→ Scaffolding component structure",   color: "#3333ee" },
+    { label: "Refine",   line: "→ Adjusting layout + interaction",    color: "#5555cc" },
+    { label: "Ship",     line: "✓ Merged to main · 47 lines",         color: "#2a9a60" },
+  ];
+  const [step, setStep] = useState(0);
+  const [typing, setTyping] = useState(true);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setTyping(true);
+      setTimeout(() => { setTyping(false); setStep(s => (s + 1) % STEPS.length); }, 500);
+    }, 2000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div style={{ width:"100%", height:"100%", background:"#fff", display:"flex", flexDirection:"column", padding:"20px", fontFamily:"'DM Mono',monospace", gap:"10px" }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+        <span style={{ fontSize:"9px", color:"#bbb", letterSpacing:"0.1em", textTransform:"uppercase" }}>Cursor + Claude Code</span>
+        <div style={{ display:"flex", gap:"4px" }}>
+          {["#f87171","#fbbf24","#34d399"].map(c => <div key={c} style={{ width:"7px", height:"7px", borderRadius:"50%", background:c }} />)}
+        </div>
+      </div>
+      <div style={{ background:"#fafafa", border:"1px solid #ebebeb", borderRadius:"6px", padding:"10px 12px", flex:1, display:"flex", flexDirection:"column", gap:"8px" }}>
+        {STEPS.map((s, i) => (
+          <div key={s.label} style={{ display:"flex", gap:"8px", alignItems:"flex-start", opacity: i <= step ? 1 : 0.22, transition:"opacity 0.4s" }}>
+            <span style={{ fontSize:"7px", color: i === step ? "#3333ee" : "#ccc", width:"44px", flexShrink:0, marginTop:"1px" }}>{s.label}</span>
+            <span style={{ fontSize:"7.5px", color: i === step ? s.color : "#bbb", lineHeight:1.5, transition:"color 0.3s", fontStyle: i === 0 ? "italic" : "normal" }}>
+              {s.line}{i === step && typing ? "▌" : ""}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div style={{ display:"flex", gap:"6px", alignItems:"center" }}>
+        <div style={{ width:"6px", height:"6px", borderRadius:"50%", background: step === 3 ? "#34d399" : "#3333ee", transition:"background 0.4s" }} />
+        <span style={{ fontSize:"7px", color:"#aaa" }}>{step === 3 ? "ready to ship" : "generating…"}</span>
       </div>
     </div>
   );
@@ -703,20 +816,18 @@ interface SketchCardProps { title:string; subtitle:string; height:number; childr
 const SketchCard: FC<SketchCardProps> = ({ title, subtitle, height, children, index }) => (
   <div style={{opacity:0,animation:"fadeUp 0.6s ease forwards",animationDelay:`${index*0.12}s`}}>
     <div style={{width:"100%",height,borderRadius:"10px",overflow:"hidden",background:"#f5f3f0",marginBottom:"12px",position:"relative",boxShadow:"0 2px 12px rgba(0,0,0,0.06)"}}>{children}</div>
-    <p style={{fontFamily:"'DM Mono',monospace",fontSize:"11px",color:"#999",letterSpacing:"0.01em",marginBottom:"3px"}}>{title}</p>
-    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:"12px",color:"#bbb",fontWeight:300}}>{subtitle}</p>
+    <p style={{fontFamily:"'DM Mono',monospace",fontSize:"13px",color:"#555",letterSpacing:"0.01em",marginBottom:"5px",textAlign:"left"}}>{title}</p>
+    <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:"13px",color:"#999",fontWeight:300,textAlign:"left"}}>{subtitle}</p>
   </div>
 );
 
 const SectionLabel: FC<{label:string; index:number}> = ({ label, index }) => (
-  <p style={{fontFamily:"'DM Mono',monospace",fontSize:"11px",color:"#bbb",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"32px",opacity:0,animation:"fadeIn 0.5s ease forwards",animationDelay:`${index*0.08}s`}}>{label}</p>
+  <p style={{fontFamily:"'Inter',sans-serif",fontSize:"20px",fontWeight:600,color:"#111",letterSpacing:"-0.02em",marginBottom:"36px",textAlign:"left",opacity:0,animation:"fadeIn 0.5s ease forwards",animationDelay:`${index*0.08}s`}}>{label}</p>
 );
 
 const GalleryPage: FC = () => (
   <div style={{opacity:0,animation:"fadeIn 0.5s ease 0.1s forwards"}}>
-
-    {/* ── 1. Generative Motion Graphic ── */}
-    <SectionLabel label="01 · Generative Motion Graphic" index={0} />
+    <SectionLabel label="Generative Motion" index={0} />
     <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:"24px",marginBottom:"24px",alignItems:"start"}}>
       <SketchCard title="flow field" subtitle="particles following a noise vector field" height={300} index={0}><FlowField /></SketchCard>
       <SketchCard title="orbit rings" subtitle="concentric motion, alternating directions" height={300} index={1}><OrbitRings /></SketchCard>
@@ -726,30 +837,33 @@ const GalleryPage: FC = () => (
       <SketchCard title="dot grid" subtitle="noise-driven breathing grid" height={280} index={3}><DotGrid /></SketchCard>
     </div>
 
-    {/* ── 2. Design Process ── */}
-    <SectionLabel label="02 · Design Process" index={1} />
+    <SectionLabel label="Design Process" index={1} />
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"24px",marginBottom:"64px",alignItems:"start"}}>
       <SketchCard title="design thinking" subtitle="5-stage human-centered design framework" height={280} index={4}><DesignThinkingSketch /></SketchCard>
       <SketchCard title="user research" subtitle="interviews · surveys · key insights" height={280} index={5}><UserResearchSketch /></SketchCard>
       <SketchCard title="agile · scrum · kanban" subtitle="sprint planning & iterative delivery" height={280} index={6}><KanbanSketch /></SketchCard>
     </div>
 
-    {/* ── 3. Design Tools ── */}
-    <SectionLabel label="03 · Design Tools" index={2} />
+    <SectionLabel label="Design Tools" index={2} />
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"24px",marginBottom:"64px",alignItems:"start"}}>
       <SketchCard title="figma" subtitle="layers · inspect · component tokens" height={280} index={7}><FigmaSketch /></SketchCard>
       <SketchCard title="design system" subtitle="atomic design · tokens · component library" height={280} index={8}><DesignSystemSketch /></SketchCard>
       <SketchCard title="prototyping" subtitle="user flows · interaction design · handoff" height={280} index={9}><PrototypingSketch /></SketchCard>
     </div>
 
-    {/* ── 4. Accessibility ── */}
-    <SectionLabel label="04 · Accessibility" index={3} />
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"24px",marginBottom:"32px",alignItems:"start"}}>
+    <SectionLabel label="Accessibility" index={3} />
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"24px",marginBottom:"64px",alignItems:"start"}}>
       <SketchCard title="wcag compliance" subtitle="AA / AAA audit · focus · keyboard nav" height={280} index={10}><WCAGSketch /></SketchCard>
       <SketchCard title="colour contrast" subtitle="WCAG contrast ratio · black · white · purple" height={280} index={11}><ColorContrastSketch /></SketchCard>
       <SketchCard title="screen reader" subtitle="ARIA roles · semantic HTML · a11y tree" height={280} index={12}><ScreenReaderSketch /></SketchCard>
     </div>
 
+    <SectionLabel label="Prototyping Tools" index={4} />
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"24px",marginBottom:"32px",alignItems:"start"}}>
+      <SketchCard title="protopie" subtitle="trigger/response interaction authoring" height={280} index={13}><ProtoPieSketch /></SketchCard>
+      <SketchCard title="framer motion" subtitle="code-based animation and state variants" height={280} index={14}><FramerSketch /></SketchCard>
+      <SketchCard title="cursor + claude code" subtitle="AI-accelerated prototype-to-production" height={280} index={15}><CursorAISketch /></SketchCard>
+    </div>
   </div>
 );
 
@@ -907,15 +1021,12 @@ const ProjectCard: FC<ProjectCardProps> = ({ project, index, onCursorEnter, onCu
   const inner = (
     <>
       <div style={mediaWrapperStyle}>
-
-        {/* ── eBay: Apple-style white → rose-pink → periwinkle gradient with grain ── */}
         {project.id === 2 ? (
           <>
             <video ref={videoRef} src={project.video!} muted loop playsInline autoPlay
               style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", display:"block" }} />
             {project.link && <div style={{...overlayStyle, zIndex:4}} />}
           </>
-
         ) : project.id === 4 ? (
           <>
             <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,#e8521a 0%,#c23a10 25%,#2a4a6b 60%,#8aafd4 82%,#d8eaf8 100%)",zIndex:0}} />
@@ -937,19 +1048,15 @@ const ProjectCard: FC<ProjectCardProps> = ({ project, index, onCursorEnter, onCu
               onMouseLeave={()=>{setHovered(false);onCursorLeave();}}
             />
           </>
-
         ) : project.video ? (
-          // ── all other videos: fill the box edge-to-edge ──
           <video ref={videoRef} src={project.video} muted loop playsInline autoPlay
             style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}} />
-
         ) : project.image ? (
           <img src={project.image} alt={project.title??project.company??""} style={imgStyle} />
         ) : null}
 
         {project.id !== 2 && project.link && <div style={overlayStyle} />}
 
-        {/* pill tag */}
         <div style={{ position:"absolute", bottom:"12px", left:"12px", background:"rgba(255,255,255,0.92)", backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)", borderRadius:"999px", padding:"5px 10px", display:"flex", alignItems:"center", gap:"5px", boxShadow:"0 1px 4px rgba(0,0,0,0.08)", pointerEvents:"none", zIndex:10 }}>
           <span style={{fontFamily:"'Inter',sans-serif",fontSize:"12px",fontWeight:500,color:"#222",letterSpacing:"-0.01em"}}>{project.tag}</span>
           {project.tags.map((t) => (
@@ -982,7 +1089,11 @@ const ProjectCard: FC<ProjectCardProps> = ({ project, index, onCursorEnter, onCu
       onMouseLeave={()=>{setHovered(false);onCursorLeave();}}
     >{inner}</a>
   ) : (
-    <div className="project-card" style={cardStyle} onMouseEnter={()=>setHovered(true)} onMouseLeave={()=>setHovered(false)}>{inner}</div>
+    <div className="project-card" style={cardStyle}
+      onMouseEnter={(e)=>{setHovered(true);onCursorEnter(project.id,e.clientX,e.clientY);}}
+      onMouseMove={(e)=>onCursorMove(e.clientX,e.clientY)}
+      onMouseLeave={()=>{setHovered(false);onCursorLeave();}}
+    >{inner}</div>
   );
 };
 
@@ -1010,16 +1121,16 @@ function usePlayDrag(init: PlayVec2): [PlayVec2, (e: React.MouseEvent<HTMLDivEle
 
 const PlayNode: FC<PlayNodeProps> = ({ pos, drag, width=300, label, icon, accent=false, delay=0, children }) => (
   <div onMouseDown={drag} style={{ position:"absolute", left:pos.x, top:pos.y, width, background:"rgba(255,255,255,0.72)", border:"1px solid rgba(255,255,255,0.9)", borderRadius:18, boxShadow:accent?"0 0 0 1px rgba(61,127,255,0.2),0 8px 40px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.95)":"0 8px 40px rgba(0,0,0,0.10),inset 0 1px 0 rgba(255,255,255,0.95)", backdropFilter:"blur(24px) saturate(1.8)", WebkitBackdropFilter:"blur(24px) saturate(1.8)", cursor:"grab", userSelect:"none", zIndex:10, overflow:"hidden", animation:`playNodeIn 0.5s ${delay}s cubic-bezier(.16,1,.3,1) both` }}>
-  <div style={{ display:"flex", alignItems:"center", gap:8, padding:"10px 16px", borderBottom:"1px solid rgba(0,0,0,0.06)" }}>
-    <span style={{ fontSize:11, color:accent?"#3d7fff":"#aaa" }}>{icon}</span>
-    <span style={{ fontSize:10, fontWeight:600, color:accent?"#3d7fff":"#999", letterSpacing:"0.08em", textTransform:"uppercase", fontFamily:"'DM Mono',monospace" }}>{label}</span>
-    <div style={{ marginLeft:"auto", display:"flex", gap:5 }}>
-      <div style={{ width:8, height:8, borderRadius:"50%", background:"rgba(0,0,0,0.08)" }} />
-      <div style={{ width:8, height:8, borderRadius:"50%", background:"rgba(192,57,43,0.25)" }} />
+    <div style={{ display:"flex", alignItems:"center", gap:8, padding:"10px 16px", borderBottom:"1px solid rgba(0,0,0,0.06)" }}>
+      <span style={{ fontSize:11, color:accent?"#3d7fff":"#aaa" }}>{icon}</span>
+      <span style={{ fontSize:10, fontWeight:600, color:accent?"#3d7fff":"#999", letterSpacing:"0.08em", textTransform:"uppercase", fontFamily:"'DM Mono',monospace" }}>{label}</span>
+      <div style={{ marginLeft:"auto", display:"flex", gap:5 }}>
+        <div style={{ width:8, height:8, borderRadius:"50%", background:"rgba(0,0,0,0.08)" }} />
+        <div style={{ width:8, height:8, borderRadius:"50%", background:"rgba(192,57,43,0.25)" }} />
+      </div>
     </div>
+    {children}
   </div>
-  {children}
-</div>
 );
 
 const PlayWire: FC<{ x1:number; y1:number; x2:number; y2:number }> = ({ x1, y1, x2, y2 }) => {
@@ -1027,121 +1138,306 @@ const PlayWire: FC<{ x1:number; y1:number; x2:number; y2:number }> = ({ x1, y1, 
   return <path d={`M${x1},${y1} C${cx},${y1} ${cx},${y2} ${x2},${y2}`} stroke="rgba(100,140,255,0.3)" strokeWidth={1.2} fill="none" strokeDasharray="4 4" />;
 };
 
+// ─── Inline Book Cover SVGs (no external URLs) ────────────────────────────────
+
+const BookCover: FC<{ coverKey: string }> = ({ coverKey }) => {
+  if (coverKey === "doet") return (
+    <svg viewBox="0 0 64 92" width="64" height="92" style={{ borderRadius: 3, boxShadow: "0 6px 20px rgba(0,0,0,0.28)", display: "block" }}>
+      <rect width="64" height="92" fill="#B8281A" rx="2" />
+      <rect x="3" y="3" width="58" height="86" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="0.7" rx="1.5" />
+      <rect x="0" y="0" width="5" height="92" fill="rgba(0,0,0,0.18)" rx="2" />
+      <ellipse cx="33" cy="58" rx="17" ry="13" fill="rgba(255,255,255,0.11)" />
+      <ellipse cx="33" cy="56" rx="13" ry="9" fill="rgba(255,255,255,0.08)" />
+      <path d="M16 56 Q8 49 12 43 Q16 38 20 45" stroke="rgba(255,255,255,0.3)" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+      <path d="M50 51 Q58 51 58 58 Q58 65 50 65" stroke="rgba(255,255,255,0.22)" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+      <rect x="28" y="41" width="10" height="5" rx="2.5" fill="rgba(255,255,255,0.2)" />
+      <circle cx="33" cy="40" r="2" fill="rgba(255,255,255,0.25)" />
+      <ellipse cx="33" cy="72" rx="15" ry="2.5" fill="rgba(0,0,0,0.2)" />
+      <text x="32" y="17" textAnchor="middle" fill="rgba(255,255,255,0.9)" fontSize="4.6" fontFamily="Georgia,serif" fontWeight="bold" letterSpacing="0.4">THE DESIGN OF</text>
+      <text x="32" y="23" textAnchor="middle" fill="rgba(255,255,255,0.9)" fontSize="4.6" fontFamily="Georgia,serif" fontWeight="bold" letterSpacing="0.4">EVERYDAY THINGS</text>
+      <text x="32" y="85" textAnchor="middle" fill="rgba(255,255,255,0.55)" fontSize="3.8" fontFamily="Georgia,serif">DON NORMAN</text>
+    </svg>
+  );
+
+  if (coverKey === "tfs") return (
+    <svg viewBox="0 0 64 92" width="64" height="92" style={{ borderRadius: 3, boxShadow: "0 6px 20px rgba(0,0,0,0.28)", display: "block" }}>
+      <rect width="64" height="92" fill="#192F55" rx="2" />
+      <rect x="3" y="3" width="58" height="86" fill="none" stroke="rgba(255,255,255,0.09)" strokeWidth="0.7" rx="1.5" />
+      <rect x="0" y="0" width="5" height="92" fill="rgba(0,0,0,0.2)" rx="2" />
+      <path d="M10 66 Q32 30 54 66" stroke="rgba(80,150,240,0.16)" strokeWidth="26" fill="none" strokeLinecap="round" />
+      <line x1="32" y1="32" x2="32" y2="70" stroke="rgba(255,255,255,0.1)" strokeWidth="0.7" strokeDasharray="2.5 2" />
+      <path d="M10 62 Q21 38 32 48" stroke="rgba(100,170,255,0.28)" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <path d="M54 62 Q43 38 32 48" stroke="rgba(255,180,80,0.25)" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <circle cx="32" cy="51" r="10" fill="rgba(80,140,230,0.1)" stroke="rgba(120,170,255,0.18)" strokeWidth="0.7" />
+      <text x="32" y="17" textAnchor="middle" fill="rgba(255,255,255,0.88)" fontSize="5.8" fontFamily="Georgia,serif" fontWeight="bold">THINKING,</text>
+      <text x="32" y="25" textAnchor="middle" fill="rgba(255,255,255,0.88)" fontSize="5.8" fontFamily="Georgia,serif" fontWeight="bold">FAST AND SLOW</text>
+      <text x="32" y="85" textAnchor="middle" fill="rgba(255,255,255,0.48)" fontSize="3.6" fontFamily="Georgia,serif">DANIEL KAHNEMAN</text>
+    </svg>
+  );
+
+  if (coverKey === "wos") return (
+    <svg viewBox="0 0 64 92" width="64" height="92" style={{ borderRadius: 3, boxShadow: "0 6px 20px rgba(0,0,0,0.28)", display: "block" }}>
+      <rect width="64" height="92" fill="#0D0D0D" rx="2" />
+      <rect x="3" y="3" width="58" height="86" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="0.7" rx="1.5" />
+      <rect x="0" y="0" width="5" height="92" fill="rgba(255,255,255,0.04)" rx="2" />
+      <path d="M8 50 Q32 28 56 50 Q32 72 8 50Z" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.28)" strokeWidth="0.9" />
+      <circle cx="32" cy="50" r="10" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.2)" strokeWidth="0.8" />
+      <circle cx="32" cy="50" r="5" fill="rgba(255,255,255,0.14)" />
+      <circle cx="35" cy="47" r="1.8" fill="rgba(255,255,255,0.8)" />
+      <circle cx="30" cy="53" r="0.9" fill="rgba(255,255,255,0.4)" />
+      {([-14, -7, 0, 7, 14] as number[]).map((dx, i) => (
+        <line key={i} x1={32 + dx} y1={32} x2={32 + dx * 0.7} y2={36} stroke="rgba(255,255,255,0.18)" strokeWidth="0.7" strokeLinecap="round" />
+      ))}
+      <text x="32" y="20" textAnchor="middle" fill="rgba(255,255,255,0.85)" fontSize="8" fontFamily="Georgia,serif" fontWeight="bold" letterSpacing="1.2">WAYS OF</text>
+      <text x="32" y="29" textAnchor="middle" fill="rgba(255,255,255,0.85)" fontSize="8" fontFamily="Georgia,serif" fontWeight="bold" letterSpacing="1.2">SEEING</text>
+      <text x="32" y="85" textAnchor="middle" fill="rgba(255,255,255,0.42)" fontSize="3.8" fontFamily="Georgia,serif">JOHN BERGER</text>
+    </svg>
+  );
+
+  if (coverKey === "tpk") return (
+    <svg viewBox="0 0 64 92" width="64" height="92" style={{ borderRadius: 3, boxShadow: "0 6px 20px rgba(0,0,0,0.28)", display: "block" }}>
+      <rect width="64" height="92" fill="#C68B20" rx="2" />
+      <rect width="64" height="92" fill="rgba(255,220,100,0.2)" rx="2" />
+      <rect x="3" y="3" width="58" height="86" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="0.7" rx="1.5" />
+      <rect x="0" y="0" width="5" height="92" fill="rgba(0,0,0,0.15)" rx="2" />
+      <line x1="8" y1="32" x2="56" y2="32" stroke="rgba(0,0,0,0.2)" strokeWidth="0.5" />
+      {([14, 21, 28, 36, 43, 51] as number[]).map((x, i) => {
+        const lean = (i % 2 === 0 ? 1 : -1) * 2;
+        return (
+          <g key={i}>
+            <line x1={x} y1="78" x2={x + lean} y2="50" stroke="rgba(0,0,0,0.28)" strokeWidth="0.85" />
+            <ellipse cx={x + lean} cy={47} rx={2.8} ry={5.5} fill="rgba(0,0,0,0.2)" transform={`rotate(${lean * 4} ${x + lean} 50)`} />
+            <line x1={x + lean - 2} y1="54" x2={x + lean - 5} y2="50" stroke="rgba(0,0,0,0.15)" strokeWidth="0.7" />
+            <line x1={x + lean + 2} y1="54" x2={x + lean + 5} y2="50" stroke="rgba(0,0,0,0.15)" strokeWidth="0.7" />
+          </g>
+        );
+      })}
+      <line x1="6" y1="79" x2="58" y2="79" stroke="rgba(0,0,0,0.18)" strokeWidth="0.6" />
+      <text x="32" y="20" textAnchor="middle" fill="rgba(0,0,0,0.72)" fontSize="5.8" fontFamily="Georgia,serif" fontWeight="bold" letterSpacing="0.3">THE PALE KING</text>
+      <text x="32" y="85" textAnchor="middle" fill="rgba(0,0,0,0.45)" fontSize="3.5" fontFamily="Georgia,serif">DAVID FOSTER WALLACE</text>
+    </svg>
+  );
+
+  return null;
+};
+
+// ─── Prototyping Tool Icons (inline SVG) ──────────────────────────────────────
+
+const FigmaToolIcon: FC = () => (
+  <svg viewBox="0 0 44 44" width="44" height="44" style={{ display: "block", borderRadius: 10, boxShadow: "0 2px 10px rgba(0,0,0,0.15)", flexShrink: 0 }}>
+    <rect width="44" height="44" fill="#1e1e1e" rx="10" />
+    <rect x="12" y="8"  width="9" height="9" rx="4.5" fill="#f24e1e" />
+    <rect x="23" y="8"  width="9" height="9" rx="4.5" fill="#ff7262" />
+    <rect x="12" y="18" width="9" height="9" rx="4.5" fill="#a259ff" />
+    <rect x="23" y="18" width="9" height="9" rx="4.5" fill="#1abcfe" />
+    <rect x="12" y="28" width="9" height="9" rx="4.5" fill="#0acf83" />
+  </svg>
+);
+
+const ProtoPieToolIcon: FC = () => (
+  <svg viewBox="0 0 44 44" width="44" height="44" style={{ display: "block", borderRadius: 10, boxShadow: "0 2px 10px rgba(0,0,0,0.15)", flexShrink: 0 }}>
+    <rect width="44" height="44" fill="#f0f0ee" rx="10" />
+    <circle cx="22" cy="22" r="13" fill="none" stroke="#e85c3a" strokeWidth="1.5" />
+    <path d="M22 22 L22 9 A13 13 0 0 1 33.26 28.5 Z" fill="#e85c3a" />
+    <circle cx="22" cy="22" r="3" fill="#e85c3a" />
+    <circle cx="22" cy="22" r="1.2" fill="#f0f0ee" />
+  </svg>
+);
+
+const FramerToolIcon: FC = () => (
+  <svg viewBox="0 0 44 44" width="44" height="44" style={{ display: "block", borderRadius: 10, boxShadow: "0 2px 10px rgba(0,0,0,0.15)", flexShrink: 0 }}>
+    <rect width="44" height="44" fill="#0055ff" rx="10" />
+    <polygon points="12,10 32,10 32,22 22,22 32,34 22,34 12,22 22,22" fill="white" />
+  </svg>
+);
+
+const PrincipleToolIcon: FC = () => (
+  <svg viewBox="0 0 44 44" width="44" height="44" style={{ display: "block", borderRadius: 10, boxShadow: "0 2px 10px rgba(0,0,0,0.15)", flexShrink: 0 }}>
+    <rect width="44" height="44" fill="#6c3fe0" rx="10" />
+    <line x1="8"  y1="22" x2="36" y2="22" stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
+    <circle cx="12" cy="22" r="3" fill="white" />
+    <circle cx="22" cy="14" r="3" fill="white" />
+    <circle cx="32" cy="22" r="3" fill="white" />
+    <circle cx="22" cy="30" r="3" fill="rgba(255,255,255,0.45)" />
+    <line x1="12" y1="22" x2="22" y2="14" stroke="rgba(255,255,255,0.4)"  strokeWidth="0.8" />
+    <line x1="22" y1="14" x2="32" y2="22" stroke="rgba(255,255,255,0.4)"  strokeWidth="0.8" />
+    <line x1="12" y1="22" x2="22" y2="30" stroke="rgba(255,255,255,0.2)"  strokeWidth="0.8" strokeDasharray="2 1.5" />
+    <line x1="22" y1="30" x2="32" y2="22" stroke="rgba(255,255,255,0.2)"  strokeWidth="0.8" strokeDasharray="2 1.5" />
+  </svg>
+);
+
+// ─── PlayPage ─────────────────────────────────────────────────────────────────
+
 const PlayPage: FC = () => {
-  const [palettePos, paletteDrag] = usePlayDrag({ x:30,  y:20  });
-  const [moodPos,    moodDrag]    = usePlayDrag({ x:340, y:20  });
-  const [readPos,    readDrag]    = usePlayDrag({ x:640, y:20  });
-  const [quotePos,   quoteDrag]   = usePlayDrag({ x:30,  y:300 });
-  const [pastaPos,   pastaDrag]   = usePlayDrag({ x:380, y:280 });
+  const [palettePos, paletteDrag] = usePlayDrag({ x: 30,  y: 20  });
+  const [moodPos,    moodDrag]    = usePlayDrag({ x: 340, y: 20  });
+  const [readPos,    readDrag]    = usePlayDrag({ x: 640, y: 20  });
+  const [quotePos,   quoteDrag]   = usePlayDrag({ x: 30,  y: 310 });
+  const [pastaPos,   pastaDrag]   = usePlayDrag({ x: 370, y: 290 });
+  const [protoPos,   protoDrag]   = usePlayDrag({ x: 640, y: 295 });
 
   const [paletteIdx, setPaletteIdx] = useState(0);
   const [moodIdx,    setMoodIdx]    = useState(0);
   const [readIdx,    setReadIdx]    = useState(0);
   const [pastaIdx,   setPastaIdx]   = useState(0);
+  const [protoIdx,   setProtoIdx]   = useState(0);
 
   const PALETTES = [
-    { name:"Sunset Drift",  emoji:"🌅", colors:["#f97316","#fb923c","#fde68a","#fef3c7"], bg:"linear-gradient(135deg,#fff7ed,#fef3c7)" },
-    { name:"Ocean Depth",   emoji:"🌊", colors:["#0ea5e9","#38bdf8","#7dd3fc","#e0f2fe"], bg:"linear-gradient(135deg,#f0f9ff,#e0f2fe)" },
-    { name:"Forest Calm",   emoji:"🌿", colors:["#16a34a","#4ade80","#86efac","#dcfce7"], bg:"linear-gradient(135deg,#f0fdf4,#dcfce7)" },
-    { name:"Midnight",      emoji:"🌙", colors:["#6366f1","#818cf8","#a5b4fc","#e0e7ff"], bg:"linear-gradient(135deg,#eef2ff,#e0e7ff)" },
-    { name:"Rose Blush",    emoji:"🌸", colors:["#f43f5e","#fb7185","#fda4af","#ffe4e6"], bg:"linear-gradient(135deg,#fff1f2,#ffe4e6)" },
+    { name: "Sunset Drift",  emoji: "🌅", colors: ["#f97316","#fb923c","#fde68a","#fef3c7"], bg: "linear-gradient(135deg,#fff7ed,#fef3c7)" },
+    { name: "Ocean Depth",   emoji: "🌊", colors: ["#0ea5e9","#38bdf8","#7dd3fc","#e0f2fe"], bg: "linear-gradient(135deg,#f0f9ff,#e0f2fe)" },
+    { name: "Forest Calm",   emoji: "🌿", colors: ["#16a34a","#4ade80","#86efac","#dcfce7"], bg: "linear-gradient(135deg,#f0fdf4,#dcfce7)" },
+    { name: "Midnight",      emoji: "🌙", colors: ["#6366f1","#818cf8","#a5b4fc","#e0e7ff"], bg: "linear-gradient(135deg,#eef2ff,#e0e7ff)" },
+    { name: "Rose Blush",    emoji: "🌸", colors: ["#f43f5e","#fb7185","#fda4af","#ffe4e6"], bg: "linear-gradient(135deg,#fff1f2,#ffe4e6)" },
   ];
+
   const MOODS = [
-    { name:"Deep Focus",    emoji:"🎧", sub:"Aphex Twin · Brian Eno",     color:"#6366f1", bg:"linear-gradient(135deg,#eef2ff,#e0e7ff)" },
-    { name:"Late Night",    emoji:"🌃", sub:"Chet Baker · Miles Davis",    color:"#0ea5e9", bg:"linear-gradient(135deg,#f0f9ff,#dbeafe)" },
-    { name:"Morning Flow",  emoji:"☀️", sub:"Nils Frahm · Ólafur Arnalds", color:"#f59e0b", bg:"linear-gradient(135deg,#fffbeb,#fef3c7)" },
-    { name:"Creative High", emoji:"⚡", sub:"Jungle · Tame Impala",        color:"#ec4899", bg:"linear-gradient(135deg,#fdf2f8,#fce7f3)" },
+    { name: "Deep Focus",    emoji: "🎧", sub: "Aphex Twin · Brian Eno",      color: "#6366f1", bg: "linear-gradient(135deg,#eef2ff,#e0e7ff)" },
+    { name: "Late Night",    emoji: "🌃", sub: "Chet Baker · Miles Davis",     color: "#0ea5e9", bg: "linear-gradient(135deg,#f0f9ff,#dbeafe)" },
+    { name: "Morning Flow",  emoji: "☀️", sub: "Nils Frahm · Ólafur Arnalds",  color: "#f59e0b", bg: "linear-gradient(135deg,#fffbeb,#fef3c7)" },
+    { name: "Creative High", emoji: "⚡", sub: "Jungle · Tame Impala",         color: "#ec4899", bg: "linear-gradient(135deg,#fdf2f8,#fce7f3)" },
   ];
+
   const READS = [
-    { name:"The Design of Everyday Things", emoji:"📐", sub:"Don Norman",   color:"#0ea5e9", bg:"linear-gradient(135deg,#f0f9ff,#dbeafe)" },
-    { name:"Thinking Fast & Slow",          emoji:"🧠", sub:"Kahneman",     color:"#8b5cf6", bg:"linear-gradient(135deg,#f5f3ff,#ede9fe)" },
-    { name:"Ways of Seeing",                emoji:"👁",  sub:"John Berger", color:"#10b981", bg:"linear-gradient(135deg,#f0fdf4,#dcfce7)" },
-    { name:"The Pale King",                 emoji:"📖", sub:"D.F. Wallace", color:"#f59e0b", bg:"linear-gradient(135deg,#fffbeb,#fef3c7)" },
+    { name: "The Design of Everyday Things", coverKey: "doet", sub: "Don Norman",       color: "#B8281A", bg: "linear-gradient(135deg,#fff5f3,#fde8e5)" },
+    { name: "Thinking Fast & Slow",          coverKey: "tfs",  sub: "Daniel Kahneman",  color: "#192F55", bg: "linear-gradient(135deg,#f0f4ff,#dbeafe)" },
+    { name: "Ways of Seeing",                coverKey: "wos",  sub: "John Berger",      color: "#111",    bg: "linear-gradient(135deg,#f5f5f5,#e8e8e8)" },
+    { name: "The Pale King",                 coverKey: "tpk",  sub: "D.F. Wallace",     color: "#8a5c10", bg: "linear-gradient(135deg,#fffbeb,#fef3c7)" },
   ];
+
   const PASTAS = [
-    { name:"Cacio e Pepe",  emoji:"🍝", color:"#c8943a", bg:"linear-gradient(135deg,#fffbeb,#fef3c7)" },
-    { name:"Lasagna",       emoji:"🫕", color:"#b8402a", bg:"linear-gradient(135deg,#fff1f2,#ffe4e6)" },
-    { name:"Pesto Fusilli", emoji:"🌿", color:"#3a8840", bg:"linear-gradient(135deg,#f0fdf4,#dcfce7)" },
-    { name:"Penne Arrabb.", emoji:"🌶️", color:"#c03020", bg:"linear-gradient(135deg,#fff7ed,#fee2e2)" },
+    { name: "Cacio e Pepe",  emoji: "🍝", color: "#c8943a", bg: "linear-gradient(135deg,#fffbeb,#fef3c7)" },
+    { name: "Lasagna",       emoji: "🫕", color: "#b8402a", bg: "linear-gradient(135deg,#fff1f2,#ffe4e6)" },
+    { name: "Pesto Fusilli", emoji: "🌿", color: "#3a8840", bg: "linear-gradient(135deg,#f0fdf4,#dcfce7)" },
+    { name: "Penne Arrabb.", emoji: "🌶️", color: "#c03020", bg: "linear-gradient(135deg,#fff7ed,#fee2e2)" },
   ];
 
-  const curPalette=PALETTES[paletteIdx], curMood=MOODS[moodIdx], curRead=READS[readIdx], curPasta=PASTAS[pastaIdx];
+  const PROTO_TOOLS = [
+    { name: "Figma",     sub: "Smart animate · overlays · variables",    color: "#0acf83", bg: "linear-gradient(135deg,#f0fff8,#d1fae5)", Icon: FigmaToolIcon     },
+    { name: "ProtoPie",  sub: "Trigger/response · sensors · conditions", color: "#e85c3a", bg: "linear-gradient(135deg,#fff5f0,#ffe4dc)", Icon: ProtoPieToolIcon  },
+    { name: "Framer",    sub: "Code components · CMS · state vars",      color: "#0055ff", bg: "linear-gradient(135deg,#f0f4ff,#dbeafe)", Icon: FramerToolIcon    },
+    { name: "Principle", sub: "Timeline · driver-based interactions",    color: "#6c3fe0", bg: "linear-gradient(135deg,#f5f0ff,#ede9fe)", Icon: PrincipleToolIcon },
+  ];
 
-  const Dots=({len,idx,color,set}:{len:number;idx:number;color:string;set:(i:number)=>void})=>(
-    <div style={{display:"flex",justifyContent:"center",gap:5,padding:"8px 14px",borderTop:"1px solid rgba(0,0,0,0.06)"}}>
-      {Array.from({length:len},(_,i)=>(
-        <div key={i} onClick={()=>set(i)} style={{width:i===idx?16:6,height:6,borderRadius:3,background:i===idx?color:"rgba(0,0,0,0.12)",transition:"width 0.3s,background 0.3s"}} />
+  const curPalette = PALETTES[paletteIdx];
+  const curMood    = MOODS[moodIdx];
+  const curRead    = READS[readIdx];
+  const curPasta   = PASTAS[pastaIdx];
+  const curProto   = PROTO_TOOLS[protoIdx];
+
+  const Dots = ({ len, idx, color, set }: { len: number; idx: number; color: string; set: (i: number) => void }) => (
+    <div style={{ display: "flex", justifyContent: "center", gap: 5, padding: "8px 14px", borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+      {Array.from({ length: len }, (_, i) => (
+        <div key={i} onClick={() => set(i)} style={{ width: i === idx ? 16 : 6, height: 6, borderRadius: 3, background: i === idx ? color : "rgba(0,0,0,0.12)", transition: "width 0.3s,background 0.3s" }} />
       ))}
     </div>
   );
 
   return (
-    <div style={{position:"relative",width:"100%",height:"calc(100vh - 160px)",overflow:"hidden",background:"linear-gradient(160deg,#f8f9ff 0%,#f0f4ff 50%,#f8f0ff 100%)",borderRadius:16,border:"1px solid rgba(200,210,255,0.4)"}}>
+    <div style={{ position: "relative", width: "100%", height: "calc(100vh - 160px)", overflow: "hidden", background: "linear-gradient(160deg,#f8f9ff 0%,#f0f4ff 50%,#f8f0ff 100%)", borderRadius: 16, border: "1px solid rgba(200,210,255,0.4)" }}>
       <style>{`@keyframes playNodeIn{from{opacity:0;transform:translateY(12px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}`}</style>
-      <div style={{position:"absolute",inset:0,backgroundImage:"radial-gradient(rgba(100,120,255,0.08) 1px,transparent 1px)",backgroundSize:"24px 24px",pointerEvents:"none"}} />
-      <svg style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none",zIndex:5}}>
-        <PlayWire x1={palettePos.x+280} y1={palettePos.y+110} x2={moodPos.x}      y2={moodPos.y+110} />
-        <PlayWire x1={moodPos.x+290}    y1={moodPos.y+110}    x2={readPos.x}      y2={readPos.y+110} />
-        <PlayWire x1={palettePos.x+140} y1={palettePos.y+220} x2={quotePos.x+160} y2={quotePos.y} />
-        <PlayWire x1={moodPos.x+145}    y1={moodPos.y+220}    x2={pastaPos.x+140} y2={pastaPos.y} />
+      <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(100,120,255,0.08) 1px,transparent 1px)", backgroundSize: "24px 24px", pointerEvents: "none" }} />
+
+      <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 5 }}>
+        <PlayWire x1={palettePos.x + 280} y1={palettePos.y + 110} x2={moodPos.x}        y2={moodPos.y + 110}  />
+        <PlayWire x1={moodPos.x + 290}    y1={moodPos.y + 110}    x2={readPos.x}         y2={readPos.y + 110}  />
+        <PlayWire x1={palettePos.x + 140} y1={palettePos.y + 220} x2={quotePos.x + 160}  y2={quotePos.y}       />
+        <PlayWire x1={moodPos.x + 145}    y1={moodPos.y + 220}    x2={pastaPos.x + 130}  y2={pastaPos.y}       />
+        <PlayWire x1={readPos.x + 135}    y1={readPos.y + 230}    x2={protoPos.x + 135}  y2={protoPos.y}       />
       </svg>
 
+      {/* Colour Palette */}
       <PlayNode pos={palettePos} drag={paletteDrag} width={280} label="Colour Palette" icon="◐" accent delay={0}>
-        <div style={{padding:"18px 16px",background:curPalette.bg,transition:"background 0.5s",cursor:"pointer"}} onClick={()=>setPaletteIdx(i=>(i+1)%PALETTES.length)}>
-          <div style={{fontSize:36,marginBottom:10}}>{curPalette.emoji}</div>
-          <div style={{fontSize:14,fontWeight:600,color:"#111",letterSpacing:"-0.01em",marginBottom:10}}>{curPalette.name}</div>
-          <div style={{display:"flex",gap:6}}>{curPalette.colors.map((c,i)=><div key={i} style={{flex:1,height:28,borderRadius:6,background:c,transition:"background 0.4s",boxShadow:"0 1px 4px rgba(0,0,0,0.1)"}} />)}</div>
-          <div style={{fontSize:9,color:"rgba(0,0,0,0.3)",marginTop:8,fontFamily:"'DM Mono',monospace",letterSpacing:"0.06em"}}>tap to change →</div>
+        <div style={{ padding: "18px 16px", background: curPalette.bg, transition: "background 0.5s", cursor: "pointer" }} onClick={() => setPaletteIdx(i => (i + 1) % PALETTES.length)}>
+          <div style={{ fontSize: 36, marginBottom: 10 }}>{curPalette.emoji}</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#111", letterSpacing: "-0.01em", marginBottom: 10 }}>{curPalette.name}</div>
+          <div style={{ display: "flex", gap: 6 }}>{curPalette.colors.map((c, i) => <div key={i} style={{ flex: 1, height: 28, borderRadius: 6, background: c, transition: "background 0.4s", boxShadow: "0 1px 4px rgba(0,0,0,0.1)" }} />)}</div>
+          <div style={{ fontSize: 9, color: "rgba(0,0,0,0.3)", marginTop: 8, fontFamily: "'DM Mono',monospace", letterSpacing: "0.06em" }}>tap to change →</div>
         </div>
         <Dots len={PALETTES.length} idx={paletteIdx} color={curPalette.colors[0]} set={setPaletteIdx} />
       </PlayNode>
 
+      {/* Music Mood */}
       <PlayNode pos={moodPos} drag={moodDrag} width={290} label="Music Mood" icon="♪" delay={0.08}>
-        <div style={{padding:"18px 16px",background:curMood.bg,transition:"background 0.5s",cursor:"pointer",minHeight:120}} onClick={()=>setMoodIdx(i=>(i+1)%MOODS.length)}>
-          <div style={{fontSize:36,marginBottom:8}}>{curMood.emoji}</div>
-          <div style={{fontSize:14,fontWeight:600,color:curMood.color,letterSpacing:"-0.01em",marginBottom:4,transition:"color 0.3s"}}>{curMood.name}</div>
-          <div style={{fontSize:10,color:"rgba(0,0,0,0.4)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.03em"}}>{curMood.sub}</div>
-          <div style={{fontSize:9,color:"rgba(0,0,0,0.25)",marginTop:10,fontFamily:"'DM Mono',monospace",letterSpacing:"0.06em"}}>tap to change →</div>
+        <div style={{ padding: "18px 16px", background: curMood.bg, transition: "background 0.5s", cursor: "pointer", minHeight: 120 }} onClick={() => setMoodIdx(i => (i + 1) % MOODS.length)}>
+          <div style={{ fontSize: 36, marginBottom: 8 }}>{curMood.emoji}</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: curMood.color, letterSpacing: "-0.01em", marginBottom: 4, transition: "color 0.3s" }}>{curMood.name}</div>
+          <div style={{ fontSize: 10, color: "rgba(0,0,0,0.4)", fontFamily: "'DM Mono',monospace", letterSpacing: "0.03em" }}>{curMood.sub}</div>
+          <div style={{ fontSize: 9, color: "rgba(0,0,0,0.25)", marginTop: 10, fontFamily: "'DM Mono',monospace", letterSpacing: "0.06em" }}>tap to change →</div>
         </div>
         <Dots len={MOODS.length} idx={moodIdx} color={curMood.color} set={setMoodIdx} />
       </PlayNode>
 
+      {/* Reading Stack — book cover SVGs */}
       <PlayNode pos={readPos} drag={readDrag} width={270} label="Reading Stack" icon="◎" delay={0.16}>
-        <div style={{padding:"18px 16px",background:curRead.bg,transition:"background 0.5s",cursor:"pointer",minHeight:120}} onClick={()=>setReadIdx(i=>(i+1)%READS.length)}>
-          <div style={{fontSize:36,marginBottom:8}}>{curRead.emoji}</div>
-          <div style={{fontSize:13,fontWeight:600,color:curRead.color,letterSpacing:"-0.01em",lineHeight:1.3,marginBottom:4,transition:"color 0.3s"}}>{curRead.name}</div>
-          <div style={{fontSize:10,color:"rgba(0,0,0,0.4)",fontFamily:"'DM Mono',monospace"}}>{curRead.sub}</div>
-          <div style={{fontSize:9,color:"rgba(0,0,0,0.25)",marginTop:10,fontFamily:"'DM Mono',monospace",letterSpacing:"0.06em"}}>tap to change →</div>
+        <div
+          style={{ padding: "16px", background: curRead.bg, transition: "background 0.5s", cursor: "pointer", minHeight: 130, display: "flex", gap: 14, alignItems: "flex-start" }}
+          onClick={() => setReadIdx(i => (i + 1) % READS.length)}
+        >
+          <div style={{ flexShrink: 0, marginTop: 2 }}>
+            <BookCover coverKey={curRead.coverKey} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: curRead.color, letterSpacing: "-0.01em", lineHeight: 1.35, marginBottom: 5, transition: "color 0.3s" }}>{curRead.name}</div>
+            <div style={{ fontSize: 10, color: "rgba(0,0,0,0.4)", fontFamily: "'DM Mono',monospace", marginBottom: 10 }}>{curRead.sub}</div>
+            <div style={{ fontSize: 9, color: "rgba(0,0,0,0.25)", fontFamily: "'DM Mono',monospace", letterSpacing: "0.06em" }}>tap to change →</div>
+          </div>
         </div>
         <Dots len={READS.length} idx={readIdx} color={curRead.color} set={setReadIdx} />
       </PlayNode>
 
+      {/* Writing */}
       <PlayNode pos={quotePos} drag={quoteDrag} width={320} label="Writing" icon="✎" delay={0.24}>
-        <div style={{padding:"18px 20px"}}>
-          <div style={{fontSize:13,fontStyle:"italic",color:"#555",lineHeight:1.85,paddingLeft:14,borderLeft:"2px solid rgba(100,140,255,0.3)",fontFamily:"'DM Serif Display',Georgia,serif",marginBottom:14}}>
+        <div style={{ padding: "18px 20px" }}>
+          <div style={{ fontSize: 13, fontStyle: "italic", color: "#555", lineHeight: 1.85, paddingLeft: 14, borderLeft: "2px solid rgba(100,140,255,0.3)", fontFamily: "'DM Serif Display',Georgia,serif", marginBottom: 14 }}>
             "I write literary fiction — stories about how people make sense of uncertainty, how trust forms in the dark."
           </div>
-          <div style={{display:"flex",gap:6,flexWrap:"wrap" as const}}>
-            {["Literary Fiction","Narrative","Trust"].map(t=>(
-              <span key={t} style={{background:"rgba(0,0,0,0.05)",border:"1px solid rgba(0,0,0,0.08)",borderRadius:4,padding:"2px 8px",fontSize:10,color:"#888",fontFamily:"'DM Mono',monospace"}}>{t}</span>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" as const }}>
+            {["Literary Fiction", "Narrative", "Trust"].map(t => (
+              <span key={t} style={{ background: "rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 4, padding: "2px 8px", fontSize: 10, color: "#888", fontFamily: "'DM Mono',monospace" }}>{t}</span>
             ))}
           </div>
         </div>
       </PlayNode>
 
+      {/* Pasta */}
       <PlayNode pos={pastaPos} drag={pastaDrag} width={260} label="Pasta Lover" icon="🍝" delay={0.32}>
-        <div style={{padding:"18px 16px",background:curPasta.bg,minHeight:120,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:10,transition:"background 0.5s",cursor:"pointer"}} onClick={()=>setPastaIdx(i=>(i+1)%PASTAS.length)}>
-          <span style={{fontSize:48,lineHeight:1}}>{curPasta.emoji}</span>
-          <div style={{textAlign:"center"}}>
-            <div style={{fontSize:14,fontWeight:600,color:curPasta.color,letterSpacing:"-0.01em",transition:"color 0.3s"}}>{curPasta.name}</div>
-            <div style={{fontSize:9,color:curPasta.color+"88",marginTop:3,fontFamily:"'DM Mono',monospace",letterSpacing:"0.06em"}}>tap to change →</div>
+        <div style={{ padding: "18px 16px", background: curPasta.bg, minHeight: 120, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, transition: "background 0.5s", cursor: "pointer" }} onClick={() => setPastaIdx(i => (i + 1) % PASTAS.length)}>
+          <span style={{ fontSize: 48, lineHeight: 1 }}>{curPasta.emoji}</span>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: curPasta.color, letterSpacing: "-0.01em", transition: "color 0.3s" }}>{curPasta.name}</div>
+            <div style={{ fontSize: 9, color: curPasta.color + "88", marginTop: 3, fontFamily: "'DM Mono',monospace", letterSpacing: "0.06em" }}>tap to change →</div>
           </div>
         </div>
         <Dots len={PASTAS.length} idx={pastaIdx} color={curPasta.color} set={setPastaIdx} />
       </PlayNode>
 
-      <div style={{position:"absolute",bottom:14,left:16,fontFamily:"'DM Mono',monospace",fontSize:9,color:"rgba(0,0,0,0.2)",letterSpacing:"0.12em",textTransform:"uppercase",userSelect:"none",pointerEvents:"none"}}>drag to explore</div>
-      <div style={{position:"absolute",bottom:14,right:16,fontFamily:"'DM Mono',monospace",fontSize:9,color:"rgba(0,0,0,0.2)",letterSpacing:"0.08em",userSelect:"none",pointerEvents:"none"}}>5 nodes · 5 connections</div>
+      {/* Prototyping Tools */}
+      <PlayNode pos={protoPos} drag={protoDrag} width={270} label="Prototyping Tools" icon="⬡" delay={0.40}>
+        <div
+          style={{ padding: "16px", background: curProto.bg, transition: "background 0.5s", cursor: "pointer" }}
+          onClick={() => setProtoIdx(i => (i + 1) % PROTO_TOOLS.length)}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+            <curProto.Icon />
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: curProto.color, letterSpacing: "-0.01em", transition: "color 0.3s" }}>{curProto.name}</div>
+              <div style={{ fontSize: 9, color: "rgba(0,0,0,0.4)", fontFamily: "'DM Mono',monospace", marginTop: 2, lineHeight: 1.5 }}>{curProto.sub}</div>
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
+            {PROTO_TOOLS.map((t, i) => (
+              <div key={t.name} style={{ padding: "5px 8px", borderRadius: 5, background: i === protoIdx ? `${curProto.color}18` : "rgba(0,0,0,0.04)", border: `1px solid ${i === protoIdx ? curProto.color + "44" : "rgba(0,0,0,0.06)"}`, fontSize: 8.5, color: i === protoIdx ? curProto.color : "rgba(0,0,0,0.35)", fontFamily: "'DM Mono',monospace", transition: "all 0.3s", whiteSpace: "nowrap" as const }}>
+                {t.name}
+              </div>
+            ))}
+          </div>
+          <div style={{ fontSize: 9, color: "rgba(0,0,0,0.25)", marginTop: 10, fontFamily: "'DM Mono',monospace", letterSpacing: "0.06em" }}>tap to change →</div>
+        </div>
+        <Dots len={PROTO_TOOLS.length} idx={protoIdx} color={curProto.color} set={setProtoIdx} />
+      </PlayNode>
+
+      <div style={{ position: "absolute", bottom: 14, left: 16, fontFamily: "'DM Mono',monospace", fontSize: 9, color: "rgba(0,0,0,0.2)", letterSpacing: "0.12em", textTransform: "uppercase", userSelect: "none", pointerEvents: "none" }}>drag to explore</div>
+      <div style={{ position: "absolute", bottom: 14, right: 16, fontFamily: "'DM Mono',monospace", fontSize: 9, color: "rgba(0,0,0,0.2)", letterSpacing: "0.08em", userSelect: "none", pointerEvents: "none" }}>6 nodes · 5 connections</div>
     </div>
   );
 };
@@ -1236,23 +1532,56 @@ const MiaoLanPortfolio: FC = () => {
               <PlayPage />
             </div>
           ) : activeSection==="about" ? (
-            <div style={{opacity:0,animation:"fadeIn 0.5s ease 0.1s forwards",maxWidth:"560px",textAlign:"left"}}>
-              <div style={{marginBottom:"48px"}}>
-                <p style={{fontFamily:"'DM Mono',monospace",fontSize:"11px",color:"#bbb",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"20px",textAlign:"left"}}>more about me</p>
-                <p style={{fontSize:"16px",color:"#444",lineHeight:1.65,fontWeight:300,marginBottom:"16px",textAlign:"left"}}>Hello! 👋🏻 I'm Miao Lan, a product designer, builder, and design strategist with over three years of experience, working on a variety of software projects.</p>
-                <p style={{fontSize:"16px",color:"#444",lineHeight:1.65,fontWeight:300,marginBottom:"16px",textAlign:"left"}}>I don't have a clear label for what kind of designer I am. I enjoy building. I enjoy experimenting. I enjoy thinking. What I have is a set of questions I keep returning to. A deep suspicion. A stubborn belief that the emotional layer of a product carries weight.</p>
-                <p style={{fontSize:"16px",color:"#444",lineHeight:1.65,fontWeight:300,textAlign:"left"}}>I've always been more interested in the <em>why</em> behind things than the <em>what</em>. Why does someone hesitate before trusting an AI suggestion? Why does one interaction feel collaborative while another feels like a form to fill?</p>
+            <div style={{opacity:0,animation:"fadeIn 0.5s ease 0.1s forwards",maxWidth:"640px",textAlign:"left"}}>
+              <p style={{fontFamily:"'DM Mono',monospace",fontSize:"11px",color:"#bbb",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"28px"}}>more about me</p>
+
+              {/* Intro */}
+              <div style={{marginBottom:"32px"}}>
+                <p style={{fontSize:"16px",color:"#444",lineHeight:1.7,fontWeight:300,marginBottom:"16px"}}>Hello! 👋🏻 I'm Miao Lan, a product designer, builder, and design strategist with over three years of experience, working on a variety of software projects.</p>
+                <p style={{fontSize:"16px",color:"#444",lineHeight:1.7,fontWeight:300,marginBottom:"16px"}}>I don't have a clear label for what kind of designer I am. I enjoy building. I enjoy experimenting. I enjoy thinking. What I have is a set of questions I keep returning to. A deep suspicion. A stubborn belief that the emotional layer of a product carries weight.</p>
+                <p style={{fontSize:"16px",color:"#444",lineHeight:1.7,fontWeight:300}}>I've always been more interested in the <em>why</em> behind things than the <em>what</em>. Why does someone hesitate before trusting an AI suggestion? Why does one interaction feel collaborative while another feels like a form to fill?</p>
               </div>
-              <div style={{marginBottom:"48px"}}>
-                <p style={{fontFamily:"'Inter',sans-serif",fontSize:"20px",fontWeight:600,color:"#111",letterSpacing:"-0.02em",marginBottom:"14px",textAlign:"left"}}>The Problem With Knowing What You're Designing</p>
-                <p style={{fontSize:"16px",color:"#444",lineHeight:1.65,fontWeight:300,marginBottom:"16px",textAlign:"left"}}>There's a version of design work that feels very clean. Someone hands you a brief. You understand the user, you know the goal, you make the thing. It's satisfying in the way that solving a math problem is satisfying.</p>
-                <p style={{fontSize:"16px",color:"#444",lineHeight:1.65,fontWeight:300,textAlign:"left"}}>The best design problems I've worked on are the ones that, at the start, I couldn't fully articulate. Where the "user problem" on the surface is really just a symptom of something else happening underneath.</p>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"10px",marginBottom:"56px"}}>
+                {[photoCafe, photoAward, photoHackathon].map((src, i) => (
+                  <div key={i} style={{borderRadius:"10px",overflow:"hidden",aspectRatio:"4/3"}}>
+                    <img src={src} alt="" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}} />
+                  </div>
+                ))}
               </div>
-              <div style={{marginBottom:"48px"}}>
-                <p style={{fontFamily:"'Inter',sans-serif",fontSize:"20px",fontWeight:600,color:"#111",letterSpacing:"-0.02em",marginBottom:"14px",textAlign:"left"}}>AI in Design</p>
-                <p style={{fontSize:"16px",color:"#444",lineHeight:1.65,fontWeight:300,marginBottom:"16px",textAlign:"left"}}>Designing for agentic systems means thinking about how autonomy is shared. Philosophers call this <em>epistemic dependence</em>: most of what we know, we know because we trust a chain of other knowers. AI introduces a new link in that chain.</p>
-                <p style={{fontSize:"16px",color:"#444",lineHeight:1.65,fontWeight:300,textAlign:"left"}}>This is the design problem that excites me most. What people believe knowledge is. How people think, act, and reason with AI at scale.</p>
+
+              {/* The Problem */}
+              <div style={{marginBottom:"32px"}}>
+                <p style={{fontFamily:"'Inter',sans-serif",fontSize:"20px",fontWeight:600,color:"#111",letterSpacing:"-0.025em",marginBottom:"16px",lineHeight:1.2}}>The Problem With Knowing What You're Designing</p>
+                <p style={{fontSize:"16px",color:"#444",lineHeight:1.7,fontWeight:300,marginBottom:"16px"}}>There's a version of design work that feels very clean. Someone hands you a brief. You understand the user, you know the goal, you make the thing. It's satisfying in the way that solving a math problem is satisfying.</p>
+                <p style={{fontSize:"16px",color:"#444",lineHeight:1.7,fontWeight:300}}>The best design problems I've worked on are the ones that, at the start, I couldn't fully articulate.</p>
               </div>
+             
+
+              {/* AI in Design */}
+              <div style={{marginBottom:"32px"}}>
+                <p style={{fontFamily:"'Inter',sans-serif",fontSize:"20px",fontWeight:600,color:"#111",letterSpacing:"-0.025em",marginBottom:"16px",lineHeight:1.2}}>AI in Design</p>
+                <p style={{fontSize:"16px",color:"#444",lineHeight:1.7,fontWeight:300,marginBottom:"16px"}}>Designing for agentic systems means thinking about how autonomy is shared. Philosophers call this <em>epistemic dependence</em>: most of what we know, we know because we trust a chain of other knowers. AI introduces a new link in that chain.</p>
+                <p style={{fontSize:"16px",color:"#444",lineHeight:1.7,fontWeight:300,marginBottom:"16px"}}>My workflow is AI-native. I design systems as executable hypotheses, using live prototypes to close the gap between concept and behavior. I use Origami and Principle to simulate interaction logic such as timing, latency states, and probabilistic transitions.</p>
+                <p style={{fontSize:"16px",color:"#444",lineHeight:1.7,fontWeight:300}}>With Replit, Cursor, and Claude Code, I move into functional systems early, wiring real APIs and data flows to observe true behavior. Apple's creative stack — Keynote, Pages, Pixelmator, Final Cut Pro, Motion, and Logic Pro — complements this with narrative and multimodal definition.</p>
+              </div>
+             
+              {/* How I Work */}
+              <div style={{marginBottom:"40px"}}>
+                <p style={{fontFamily:"'Inter',sans-serif",fontSize:"20px",fontWeight:600,color:"#111",letterSpacing:"-0.025em",marginBottom:"24px",lineHeight:1.2}}>How I Work</p>
+                <div style={{display:"flex",flexDirection:"column",gap:"20px"}}>
+                  {[
+                    { label:"Obsession with building", body:"Founding and sole-design experience in early-stage environments; comfortable with extreme ambiguity, resource constraints, and rapid iteration." },
+                    { label:"Analyzing the Infrastructure layer", body:"Deep familiarity designing for cloud hyperscalers and AI infrastructure providers." },
+                    { label:"Vibe Coding", body:"Hands-on experimentation with AI coding environments like Replit, Cursor, and Claude Code." },
+                  ].map(item => (
+                    <div key={item.label}>
+                      <p style={{fontSize:"15px",fontWeight:500,color:"#222",marginBottom:"6px",letterSpacing:"-0.01em"}}>{item.label}</p>
+                      <p style={{fontSize:"15px",color:"#666",lineHeight:1.65,fontWeight:300}}>{item.body}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+             
             </div>
           ) : (
             <>
