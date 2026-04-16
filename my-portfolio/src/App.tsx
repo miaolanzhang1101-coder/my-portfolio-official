@@ -9,7 +9,7 @@ import fashion from "./assets/fashion.mp4";
 import photoCafe from "./assets/photo_cafe.jpg";
 import photoAward from "./assets/photo_award.jpg";
 import photoHackathon from "./assets/photo_hackathon.jpg";
-import photoApp from "./assets/photo_app.jpg";
+
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -217,7 +217,7 @@ function FlowField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = canvasRef.current; if (!canvas) return;
-    const ctx = canvas.getContext("2d")!;
+    const ctx = canvas.getContext("2d"); if (!ctx) return;
     canvas.width=canvas.offsetWidth*window.devicePixelRatio; canvas.height=canvas.offsetHeight*window.devicePixelRatio;
     ctx.scale(window.devicePixelRatio,window.devicePixelRatio);
     const w=canvas.offsetWidth,h=canvas.offsetHeight;
@@ -232,7 +232,8 @@ function FlowField() {
 const LissajousWeb: FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(()=>{
-    const canvas=canvasRef.current;if(!canvas)return; const ctx=canvas.getContext("2d")!;
+    const canvas=canvasRef.current;if(!canvas)return;
+    const ctx=canvas.getContext("2d");if(!ctx)return;
     canvas.width=canvas.offsetWidth*window.devicePixelRatio; canvas.height=canvas.offsetHeight*window.devicePixelRatio; ctx.scale(window.devicePixelRatio,window.devicePixelRatio);
     const w=canvas.offsetWidth,h=canvas.offsetHeight,cx=w/2,cy=h/2,r=Math.min(w,h)*0.38; let t=0,raf=0;
     const draw=()=>{ ctx.fillStyle="rgba(245,243,240,0.12)";ctx.fillRect(0,0,w,h); [{a:3,b:2,delta:t},{a:5,b:4,delta:t*0.7+0.3},{a:2,b:3,delta:t*1.3+1.0}].forEach(({a,b,delta},ci)=>{ ctx.beginPath(); for(let i=0;i<=360;i++){const ang=(i/360)*Math.PI*2;i===0?ctx.moveTo(cx+r*Math.sin(a*ang+delta),cy+r*Math.sin(b*ang)):ctx.lineTo(cx+r*Math.sin(a*ang+delta),cy+r*Math.sin(b*ang));} ctx.strokeStyle=(["rgba(180,100,80,","rgba(80,120,160,","rgba(100,160,120,"][ci])+"0.35)"; ctx.lineWidth=1.2;ctx.stroke();}); t+=0.004;raf=requestAnimationFrame(draw);};
@@ -244,7 +245,8 @@ const LissajousWeb: FC = () => {
 const DotGrid: FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(()=>{
-    const canvas=canvasRef.current;if(!canvas)return; const ctx=canvas.getContext("2d")!;
+    const canvas=canvasRef.current;if(!canvas)return;
+    const ctx=canvas.getContext("2d");if(!ctx)return;
     canvas.width=canvas.offsetWidth*window.devicePixelRatio; canvas.height=canvas.offsetHeight*window.devicePixelRatio; ctx.scale(window.devicePixelRatio,window.devicePixelRatio);
     const w=canvas.offsetWidth,h=canvas.offsetHeight,ROWS=12,COLS=18; let t=0,raf=0;
     const draw=()=>{ ctx.clearRect(0,0,w,h);ctx.fillStyle="#f5f3f0";ctx.fillRect(0,0,w,h); for(let row=0;row<ROWS;row++)for(let col=0;col<COLS;col++){const x=(col+0.5)*(w/COLS),y=(row+0.5)*(h/ROWS),n=smoothNoise(col/COLS*4,row/ROWS*4,t); ctx.beginPath();ctx.arc(x,y,Math.max(0.5,2+n*6),0,Math.PI*2); ctx.fillStyle=`rgba(60,55,50,${0.25+(n+1)*0.3})`;ctx.fill();} t+=0.012;raf=requestAnimationFrame(draw);};
@@ -256,7 +258,8 @@ const DotGrid: FC = () => {
 const OrbitRings: FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(()=>{
-    const canvas=canvasRef.current;if(!canvas)return; const ctx=canvas.getContext("2d")!;
+    const canvas=canvasRef.current;if(!canvas)return;
+    const ctx=canvas.getContext("2d");if(!ctx)return;
     canvas.width=canvas.offsetWidth*window.devicePixelRatio; canvas.height=canvas.offsetHeight*window.devicePixelRatio; ctx.scale(window.devicePixelRatio,window.devicePixelRatio);
     const w=canvas.offsetWidth,h=canvas.offsetHeight,cx=w/2,cy=h/2;
     const rings=Array.from({length:6},(_,i)=>({r:18+i*22,speed:0.008+i*0.003*(i%2===0?1:-1),dotCount:3+i*2,dotR:3.5-i*0.3,phase:(i/6)*Math.PI*2})); let t=0,raf=0;
@@ -367,6 +370,7 @@ const WCAGSketch: FC = () => {
   return (
     <div style={{width:"100%",height:"100%",background:"#fff",display:"flex",flexDirection:"column",padding:"20px",gap:"10px",fontFamily:"'DM Mono',monospace"}}>
       <span style={{fontSize:"9px",color:"#999",letterSpacing:"0.1em",textTransform:"uppercase"}}>WCAG Audit</span>
+      {/* FIX: removed duplicate `border` property — keep only the ternary version */}
       <div style={{background:"#fafafa",borderRadius:"6px",padding:"10px 12px",border:scanning?"1px solid #3333ee":"1px solid #ebebeb",transition:"border 0.25s"}}>
         <div style={{fontSize:"6.5px",color:"#bbb",marginBottom:"6px",letterSpacing:"0.04em"}}>UI Component under review</div>
         <div style={{display:"flex",gap:"6px",alignItems:"center"}}>
@@ -878,7 +882,7 @@ const SplashScreen: FC<{ onEnter: () => void }> = ({ onEnter }) => {
 
   useEffect(() => {
     const canvas = canvasRef.current; if (!canvas) return;
-    const ctx = canvas.getContext("2d")!;
+    const ctx = canvas.getContext("2d"); if (!ctx) return;
     let W=0,H=0;
     const resize=()=>{W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;};
     resize(); window.addEventListener("resize",resize);
@@ -943,7 +947,8 @@ const ScribbleM: FC = () => {
   useEffect(()=>{
     const canvas=canvasRef.current;if(!canvas)return;
     const dpr=window.devicePixelRatio||1,W=38,H=34; canvas.width=W*dpr;canvas.height=H*dpr;
-    const ctx=canvas.getContext("2d")!;ctx.scale(dpr,dpr);
+    const ctx=canvas.getContext("2d");if(!ctx)return;
+    ctx.scale(dpr,dpr);
     const segments=[{p0:[4,29],p1:[4,5],perp:[1,0],amp:9,loops:2,steps:60},{p0:[4,5],p1:[19,18],perp:[-0.68,0.73],amp:6,loops:1.5,steps:45},{p0:[19,18],p1:[34,5],perp:[0.68,0.73],amp:6,loops:1.5,steps:45},{p0:[34,5],p1:[34,29],perp:[-1,0],amp:9,loops:2,steps:60}];
     const lN=(a:number,b:number,t:number)=>a+(b-a)*t;
     const buildPath=()=>{const pts:[number,number][]=[]; segments.forEach(s=>{for(let i=0;i<=s.steps;i++){const t=i/s.steps,mx=lN(s.p0[0],s.p1[0],t),my=lN(s.p0[1],s.p1[1],t),loop=s.amp*Math.sin(t*Math.PI*2*s.loops); pts.push([mx+loop*s.perp[0]+(Math.random()-0.5)*0.7,my+loop*s.perp[1]+(Math.random()-0.5)*0.7]);}}); return pts;};
@@ -1138,7 +1143,7 @@ const PlayWire: FC<{ x1:number; y1:number; x2:number; y2:number }> = ({ x1, y1, 
   return <path d={`M${x1},${y1} C${cx},${y1} ${cx},${y2} ${x2},${y2}`} stroke="rgba(100,140,255,0.3)" strokeWidth={1.2} fill="none" strokeDasharray="4 4" />;
 };
 
-// ─── Inline Book Cover SVGs (no external URLs) ────────────────────────────────
+// ─── Inline Book Cover SVGs ───────────────────────────────────────────────────
 
 const BookCover: FC<{ coverKey: string }> = ({ coverKey }) => {
   if (coverKey === "doet") return (
@@ -1221,7 +1226,7 @@ const BookCover: FC<{ coverKey: string }> = ({ coverKey }) => {
   return null;
 };
 
-// ─── Prototyping Tool Icons (inline SVG) ──────────────────────────────────────
+// ─── Prototyping Tool Icons ───────────────────────────────────────────────────
 
 const FigmaToolIcon: FC = () => (
   <svg viewBox="0 0 44 44" width="44" height="44" style={{ display: "block", borderRadius: 10, boxShadow: "0 2px 10px rgba(0,0,0,0.15)", flexShrink: 0 }}>
@@ -1367,7 +1372,7 @@ const PlayPage: FC = () => {
         <Dots len={MOODS.length} idx={moodIdx} color={curMood.color} set={setMoodIdx} />
       </PlayNode>
 
-      {/* Reading Stack — book cover SVGs */}
+      {/* Reading Stack */}
       <PlayNode pos={readPos} drag={readDrag} width={270} label="Reading Stack" icon="◎" delay={0.16}>
         <div
           style={{ padding: "16px", background: curRead.bg, transition: "background 0.5s", cursor: "pointer", minHeight: 130, display: "flex", gap: 14, alignItems: "flex-start" }}
@@ -1535,7 +1540,6 @@ const MiaoLanPortfolio: FC = () => {
             <div style={{opacity:0,animation:"fadeIn 0.5s ease 0.1s forwards",maxWidth:"640px",textAlign:"left"}}>
               <p style={{fontFamily:"'DM Mono',monospace",fontSize:"11px",color:"#bbb",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"28px"}}>more about me</p>
 
-              {/* Intro */}
               <div style={{marginBottom:"32px"}}>
                 <p style={{fontSize:"16px",color:"#444",lineHeight:1.7,fontWeight:300,marginBottom:"16px"}}>Hello! 👋🏻 I'm Miao Lan, a product designer, builder, and design strategist with over three years of experience, working on a variety of software projects.</p>
                 <p style={{fontSize:"16px",color:"#444",lineHeight:1.7,fontWeight:300,marginBottom:"16px"}}>I don't have a clear label for what kind of designer I am. I enjoy building. I enjoy experimenting. I enjoy thinking. What I have is a set of questions I keep returning to. A deep suspicion. A stubborn belief that the emotional layer of a product carries weight.</p>
@@ -1549,23 +1553,19 @@ const MiaoLanPortfolio: FC = () => {
                 ))}
               </div>
 
-              {/* The Problem */}
               <div style={{marginBottom:"32px"}}>
                 <p style={{fontFamily:"'Inter',sans-serif",fontSize:"20px",fontWeight:600,color:"#111",letterSpacing:"-0.025em",marginBottom:"16px",lineHeight:1.2}}>The Problem With Knowing What You're Designing</p>
                 <p style={{fontSize:"16px",color:"#444",lineHeight:1.7,fontWeight:300,marginBottom:"16px"}}>There's a version of design work that feels very clean. Someone hands you a brief. You understand the user, you know the goal, you make the thing. It's satisfying in the way that solving a math problem is satisfying.</p>
                 <p style={{fontSize:"16px",color:"#444",lineHeight:1.7,fontWeight:300}}>The best design problems I've worked on are the ones that, at the start, I couldn't fully articulate.</p>
               </div>
-             
 
-              {/* AI in Design */}
               <div style={{marginBottom:"32px"}}>
                 <p style={{fontFamily:"'Inter',sans-serif",fontSize:"20px",fontWeight:600,color:"#111",letterSpacing:"-0.025em",marginBottom:"16px",lineHeight:1.2}}>AI in Design</p>
                 <p style={{fontSize:"16px",color:"#444",lineHeight:1.7,fontWeight:300,marginBottom:"16px"}}>Designing for agentic systems means thinking about how autonomy is shared. Philosophers call this <em>epistemic dependence</em>: most of what we know, we know because we trust a chain of other knowers. AI introduces a new link in that chain.</p>
                 <p style={{fontSize:"16px",color:"#444",lineHeight:1.7,fontWeight:300,marginBottom:"16px"}}>My workflow is AI-native. I design systems as executable hypotheses, using live prototypes to close the gap between concept and behavior. I use Origami and Principle to simulate interaction logic such as timing, latency states, and probabilistic transitions.</p>
                 <p style={{fontSize:"16px",color:"#444",lineHeight:1.7,fontWeight:300}}>With Replit, Cursor, and Claude Code, I move into functional systems early, wiring real APIs and data flows to observe true behavior. Apple's creative stack — Keynote, Pages, Pixelmator, Final Cut Pro, Motion, and Logic Pro — complements this with narrative and multimodal definition.</p>
               </div>
-             
-              {/* How I Work */}
+
               <div style={{marginBottom:"40px"}}>
                 <p style={{fontFamily:"'Inter',sans-serif",fontSize:"20px",fontWeight:600,color:"#111",letterSpacing:"-0.025em",marginBottom:"24px",lineHeight:1.2}}>How I Work</p>
                 <div style={{display:"flex",flexDirection:"column",gap:"20px"}}>
@@ -1581,7 +1581,6 @@ const MiaoLanPortfolio: FC = () => {
                   ))}
                 </div>
               </div>
-             
             </div>
           ) : (
             <>
