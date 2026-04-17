@@ -10,7 +10,6 @@ import photoCafe from "./assets/photo_cafe.jpg";
 import photoAward from "./assets/photo_award.jpg";
 import photoHackathon from "./assets/photo_hackathon.jpg";
 
-
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Project {
@@ -39,6 +38,8 @@ interface PlayNodeProps {
   accent?: boolean;
   delay?: number;
   children: React.ReactNode;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -814,8 +815,406 @@ const CursorAISketch: FC = () => {
   );
 };
 
-// ─── GalleryPage ──────────────────────────────────────────────────────────────
+// ─── PhoneShell ──────────────────────────────────────────────────────────────
 
+// ─── NotionAIFillSketch ───────────────────────────────────────────────────────
+
+const NotionAIFillSketch: FC = () => {
+  const ROWS = [
+    { date:"Nov 11, 2024", author:"XRay Tutorials", tag:"Base de datos",   tagBg:"#ffe8e8", tagColor:"#cc4444" },
+    { date:"Dec 9, 2024",  author:"XRay Tutorials", tag:"Flujo de trabajo",tagBg:"#e8f5e8", tagColor:"#2a7a2a" },
+    { date:"Nov 4, 2024",  author:"XRay Tutorials", tag:"Automatizar",     tagBg:"#e8eeff", tagColor:"#3344cc" },
+    { date:"Oct 28, 2024", author:"XRay Tutorials", tag:"Zapier",          tagBg:"#fff0e0", tagColor:"#aa6622" },
+    { date:"Oct 7, 2024",  author:"XRay Tutorials", tag:"IA Autorrelleno", tagBg:"#f0e8ff", tagColor:"#7744aa" },
+  ];
+  type Phase = "idle"|"filling"|"done";
+  const [phase, setPhase] = useState<Phase>("idle");
+  const [filled, setFilled] = useState(0);
+  const [toggleOn, setToggleOn] = useState(true);
+  useEffect(() => {
+    let fillInterval: ReturnType<typeof setInterval>;
+    const cycle = () => {
+      setPhase("idle"); setFilled(0);
+      const t = setTimeout(() => {
+        setPhase("filling"); let n=0;
+        fillInterval = setInterval(() => {
+          n++; setFilled(n);
+          if (n >= ROWS.length) { clearInterval(fillInterval); setPhase("done"); setTimeout(cycle, 2800); }
+        }, 520);
+      }, 1600);
+      return t;
+    };
+    const t = cycle(); return () => { clearTimeout(t); clearInterval(fillInterval); };
+  }, []);
+
+  return (
+    <div style={{width:"100%",height:"100%",background:"#fff",display:"flex",overflow:"hidden",fontFamily:"'Inter','DM Sans',sans-serif",position:"relative",fontSize:12}}>
+      <style>{`@keyframes fadeSlideIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      {/* Table */}
+      <div style={{flex:1,overflow:"hidden",display:"flex",flexDirection:"column",minWidth:0}}>
+        <div style={{display:"flex",background:"#fafafa",borderBottom:"1px solid #e9e9e9",flexShrink:0}}>
+          {[["📅","Publication Date",150],["👥","Author",120],["✦","AI translation",100]].map(([icon,label,w],i)=>(
+            <div key={label as string} style={{width:i<2?(w as number):undefined,flex:i===2?1:undefined,padding:"7px 12px",fontSize:11,color:i===2?"#7B68EE":"#999",fontWeight:500,borderRight:i<2?"1px solid #e9e9e9":"none",display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap" as const}}>
+              <span style={{opacity:i===2?1:0.45,fontSize:i===2?11:10}}>{icon as string}</span>{label as string}
+            </div>
+          ))}
+        </div>
+        {ROWS.map((row,i)=>(
+          <div key={i} style={{display:"flex",borderBottom:"1px solid #f2f2f2",background:i===filled&&phase==="filling"?"rgba(123,104,238,0.025)":"#fff",transition:"background 0.3s",flexShrink:0}}>
+            <div style={{width:150,padding:"9px 12px",color:"#333",borderRight:"1px solid #f2f2f2",whiteSpace:"nowrap" as const,overflow:"hidden"}}>{row.date}</div>
+            <div style={{width:120,padding:"9px 12px",color:"#333",borderRight:"1px solid #f2f2f2",display:"flex",alignItems:"center",gap:5,overflow:"hidden"}}>
+              <span style={{width:13,height:13,borderRadius:"50%",border:"1.5px solid #ddd",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:8,color:"#ccc",flexShrink:0}}>×</span>
+              <span style={{whiteSpace:"nowrap" as const,overflow:"hidden",textOverflow:"ellipsis"}}>{row.author}</span>
+            </div>
+            <div style={{flex:1,padding:"9px 12px",display:"flex",alignItems:"center",minWidth:0}}>
+              {i < filled ? (
+                <span style={{background:row.tagBg,color:row.tagColor,borderRadius:4,padding:"2px 8px",fontSize:11,fontWeight:500,whiteSpace:"nowrap" as const,animation:"fadeSlideIn 0.35s ease"}}>{row.tag}</span>
+              ) : i===filled&&phase==="filling" ? (
+                <span style={{display:"inline-flex",alignItems:"center",gap:5}}>
+                  <span style={{width:11,height:11,borderRadius:"50%",border:"2px solid #7B68EE",borderTopColor:"transparent",display:"inline-block",animation:"spin 0.7s linear infinite"}}/>
+                  <span style={{fontSize:11,color:"#bbb"}}>Translating…</span>
+                </span>
+              ) : null}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Floating AI Panel */}
+      <div style={{position:"absolute",right:10,top:8,bottom:8,width:248,background:"#fff",borderRadius:10,boxShadow:"0 4px 30px rgba(0,0,0,0.18),0 1px 6px rgba(0,0,0,0.08)",border:"1px solid #e4e4e4",display:"flex",flexDirection:"column",overflow:"hidden",zIndex:10}}>
+        <div style={{padding:"11px 13px 10px",borderBottom:"1px solid #f0f0f0",display:"flex",alignItems:"center",gap:7}}>
+          <span style={{fontSize:12,color:"#bbb"}}>←</span>
+          <span style={{flex:1,fontSize:12.5,fontWeight:600,color:"#111",letterSpacing:"-0.01em",whiteSpace:"nowrap" as const,overflow:"hidden",textOverflow:"ellipsis"}}>Fill "AI translation" with AI</span>
+          <span style={{fontSize:13,color:"#bbb"}}>×</span>
+        </div>
+        <div style={{padding:"9px 13px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:"1px solid #f0f0f0"}}>
+          <span style={{color:"#333"}}>Fill with</span>
+          <span style={{color:"#7B68EE",fontWeight:500,display:"flex",alignItems:"center",gap:3}}>Aあ Translate <span style={{color:"#ccc",fontSize:10}}>›</span></span>
+        </div>
+        <div style={{padding:"9px 13px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:"1px solid #f0f0f0"}}>
+          <span style={{color:"#333"}}>Auto-update on page edits</span>
+          <div style={{width:30,height:17,borderRadius:9,background:toggleOn?"#2563eb":"#ddd",position:"relative",cursor:"pointer",flexShrink:0,transition:"background 0.2s"}} onClick={()=>setToggleOn(t=>!t)}>
+            <div style={{position:"absolute",top:2,left:toggleOn?13:2,width:13,height:13,borderRadius:"50%",background:"white",transition:"left 0.2s",boxShadow:"0 1px 3px rgba(0,0,0,0.25)"}}/>
+          </div>
+        </div>
+        <div style={{padding:"7px 13px 3px",fontSize:10,color:"#b0b0b0",fontWeight:600,letterSpacing:"0.06em",textTransform:"uppercase" as const}}>Options</div>
+        {[["What to translate?","Blog T…"],["Translate to","Span…"]].map(([k,v])=>(
+          <div key={k} style={{padding:"7px 13px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:"1px solid #f7f7f7"}}>
+            <span style={{color:"#333"}}>{k}</span>
+            <span style={{color:"#aaa",display:"flex",alignItems:"center",gap:3}}>{v}<span style={{fontSize:10,color:"#ccc"}}>›</span></span>
+          </div>
+        ))}
+        <div style={{margin:"9px 13px 5px",padding:"8px",background:"rgba(123,104,238,0.07)",border:"1px solid rgba(123,104,238,0.15)",borderRadius:7,textAlign:"center" as const,cursor:"pointer"}}>
+          <span style={{fontSize:12,color:"#7B68EE",fontWeight:500}}>✦ Try on this view</span>
+        </div>
+        <div style={{margin:"0 13px 8px",padding:"8px",background:phase==="done"?"#16a34a":"#2563eb",borderRadius:7,textAlign:"center" as const,cursor:"pointer",transition:"background 0.5s"}}>
+          <span style={{fontSize:12.5,color:"white",fontWeight:600}}>{phase==="done"?"✓ 5 rows translated":"Save changes"}</span>
+        </div>
+        <div style={{borderTop:"1px solid #f0f0f0",paddingTop:3}}>
+          {[["⚡","Autofill all pages"],["🗑","Turn off AI autofill"],["?","Learn about AI autofill"]].map(([icon,label])=>(
+            <div key={label} style={{padding:"6px 13px",display:"flex",alignItems:"center",gap:8,cursor:"pointer"}}>
+              <span style={{fontSize:11,opacity:0.35}}>{icon}</span>
+              <span style={{color:label==="Learn about AI autofill"?"#aaa":"#444"}}>{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+// ─── ReplitAISketch ───────────────────────────────────────────────────────────
+
+const ReplitAISketch: FC = () => {
+  type Stage = "typing"|"thinking"|"streaming"|"done";
+  const [stage, setStage]   = useState<Stage>("typing");
+  const [chars, setChars]   = useState(0);
+  const [codeLines, setCodeLines] = useState(0);
+
+  const PROMPT = "Add error handling + return structured JSON with summary, key_points, confidence";
+  const CODE_LINES = [
+    "def summarize_document(text: str) -> dict:",
+    "    \"\"\"AI-powered doc summary with error handling.\"\"\"",
+    "    client = openai.OpenAI()",
+    "    try:",
+    "        response = client.chat.completions.create(",
+    "            model=\"gpt-4o-mini\",",
+    "            messages=[{\"role\":\"system\",",
+    "                       \"content\":\"Summarize concisely.\"},",
+    "                      {\"role\":\"user\",\"content\":text}]",
+    "        )",
+    "        return {",
+    "            \"summary\": response.choices[0].message.content,",
+    "            \"key_points\": [],",
+    "            \"confidence\": 0.94",
+    "        }",
+    "    except openai.OpenAIError as e:",
+    "        return {\"error\": str(e), \"confidence\": 0.0}",
+  ];
+
+  useEffect(()=>{
+    const cycle=()=>{
+      setStage("typing"); setChars(0); setCodeLines(0);
+      let c=0;
+      const typeTick=setInterval(()=>{ c++; setChars(c); if(c>=PROMPT.length){ clearInterval(typeTick); setStage("thinking");
+        setTimeout(()=>{ setStage("streaming"); let l=0;
+          const codeTick=setInterval(()=>{ l++; setCodeLines(l); if(l>=CODE_LINES.length){ clearInterval(codeTick); setStage("done"); setTimeout(cycle,3000); }},80);
+        },900);
+      }},28+Math.random()*14);
+    };
+    cycle();
+  },[]);
+
+  const TOKEN_COLORS: Record<string,string> = {
+    "def":"#c586c0","return":"#c586c0","try":"#c586c0","except":"#c586c0","import":"#c586c0",
+    "str":"#4ec9b0","dict":"#4ec9b0","openai":"#4ec9b0",
+  };
+
+  const colorizeCode = (line: string) => {
+    // Simple tokenizer for display
+    const parts: React.ReactNode[] = [];
+    const tokens=line.match(/(".*?"|#.*|[\w.]+|[^"#\w. ]+| +)/g)||[];
+    tokens.forEach((tok,i)=>{
+      const col = TOKEN_COLORS[tok] || (tok.startsWith('"')||tok.startsWith("'") ? "#ce9178" : /^\d/.test(tok) ? "#b5cea8" : tok.startsWith("#") ? "#6a9955" : "#d4d4d4");
+      parts.push(<span key={i} style={{color:col}}>{tok}</span>);
+    });
+    return parts;
+  };
+
+  return (
+    <div style={{width:"100%",height:"100%",background:"#1e1e1e",display:"flex",overflow:"hidden",fontFamily:"'Menlo','Monaco','Courier New',monospace",fontSize:11}}>
+      {/* Left: Code Editor */}
+      <div style={{flex:"0 0 58%",display:"flex",flexDirection:"column",borderRight:"1px solid #333"}}>
+        {/* Tab bar */}
+        <div style={{display:"flex",background:"#2d2d2d",borderBottom:"1px solid #1e1e1e",flexShrink:0}}>
+          {["main.py","utils.py"].map((f,i)=>(
+            <div key={f} style={{padding:"7px 14px",fontSize:11,color:i===0?"#d4d4d4":"#888",background:i===0?"#1e1e1e":"transparent",borderRight:"1px solid #333",display:"flex",alignItems:"center",gap:6,cursor:"pointer"}}>
+              <div style={{width:7,height:7,borderRadius:"50%",background:i===0?"#e8521a":"#555"}}/>
+              {f}
+            </div>
+          ))}
+        </div>
+        {/* Gutter + code */}
+        <div style={{flex:1,overflow:"hidden",padding:"10px 0",position:"relative"}}>
+          {/* Static top lines */}
+          {["import openai, json","from typing import Optional","",""].map((line,i)=>(
+            <div key={i} style={{display:"flex",lineHeight:"18px",paddingRight:12}}>
+              <span style={{width:32,textAlign:"right" as const,color:"#858585",paddingRight:16,flexShrink:0,userSelect:"none"}}>{i+1}</span>
+              <span style={{color:line.startsWith("import")||line.startsWith("from")?"#c586c0":line.startsWith("#")?"#6a9955":"#d4d4d4"}}>{line}</span>
+            </div>
+          ))}
+          {/* AI-generated code lines streaming in */}
+          {CODE_LINES.slice(0,codeLines).map((line,i)=>(
+            <div key={i} style={{display:"flex",lineHeight:"18px",paddingRight:12,background:i===codeLines-1&&stage==="streaming"?"rgba(51,51,238,0.06)":"transparent"}}>
+              <span style={{width:32,textAlign:"right" as const,color:"#858585",paddingRight:16,flexShrink:0,userSelect:"none"}}>{i+5}</span>
+              <span>{colorizeCode(line)}</span>
+            </div>
+          ))}
+          {/* Cursor */}
+          {stage!=="done" && codeLines < CODE_LINES.length && (
+            <div style={{display:"flex",lineHeight:"18px"}}>
+              <span style={{width:32,textAlign:"right" as const,color:"#858585",paddingRight:16,flexShrink:0}}>{codeLines+5}</span>
+              <span style={{display:"inline-block",width:7,height:14,background:"#aeafad",animation:"cursorBlink 1s step-start infinite",verticalAlign:"middle"}}/>
+            </div>
+          )}
+        </div>
+        {/* Status bar */}
+        <div style={{height:20,background:"#007acc",display:"flex",alignItems:"center",padding:"0 10px",gap:12,flexShrink:0}}>
+          <span style={{color:"white",fontSize:10,opacity:0.9}}>main.py</span>
+          <span style={{color:"white",fontSize:10,opacity:0.7}}>Python 3.11</span>
+          <span style={{color:"white",fontSize:10,opacity:0.7,marginLeft:"auto"}}>UTF-8</span>
+        </div>
+      </div>
+
+      {/* Right: Ghostwriter AI Panel */}
+      <div style={{flex:1,display:"flex",flexDirection:"column",background:"#252526",overflow:"hidden"}}>
+        {/* Panel header */}
+        <div style={{padding:"10px 14px",borderBottom:"1px solid #333",display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
+          <div style={{width:22,height:22,borderRadius:6,background:"linear-gradient(135deg,#e8521a,#f59e0b)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            <span style={{color:"white",fontSize:12,fontFamily:"sans-serif",fontWeight:700}}>G</span>
+          </div>
+          <span style={{color:"#d4d4d4",fontSize:12,fontWeight:600,fontFamily:"'Inter',sans-serif"}}>Ghostwriter</span>
+          <div style={{marginLeft:"auto",width:8,height:8,borderRadius:"50%",background:stage==="done"?"#4ec9b0":stage==="thinking"||stage==="streaming"?"#e8521a":"#555",transition:"background 0.4s"}}/>
+        </div>
+        {/* Chat area */}
+        <div style={{flex:1,overflow:"hidden",padding:"12px 14px",display:"flex",flexDirection:"column",gap:10}}>
+          {/* User message */}
+          <div>
+            <div style={{fontSize:10,color:"#888",fontFamily:"'Inter',sans-serif",marginBottom:5}}>You</div>
+            <div style={{background:"rgba(51,51,238,0.15)",border:"1px solid rgba(51,51,238,0.25)",borderRadius:6,padding:"8px 10px",fontSize:10.5,color:"#ccc",lineHeight:1.55,fontFamily:"'Inter',sans-serif",minHeight:18}}>
+              {PROMPT.slice(0,chars)}{chars < PROMPT.length ? "▌" : ""}
+            </div>
+          </div>
+          {/* AI response */}
+          {(stage==="thinking"||stage==="streaming"||stage==="done") && (
+            <div>
+              <div style={{fontSize:10,color:"#888",fontFamily:"'Inter',sans-serif",marginBottom:5}}>Ghostwriter</div>
+              {stage==="thinking" ? (
+                <div style={{display:"flex",alignItems:"center",gap:6,padding:"8px 10px"}}>
+                  {[0,0.15,0.3].map((d,i)=><div key={i} style={{width:6,height:6,borderRadius:"50%",background:"#888",animation:`dotPulse 1.2s ${d}s ease-in-out infinite`}}/>)}
+                </div>
+              ) : (
+                <div style={{background:"#2d2d2d",border:"1px solid #3c3c3c",borderRadius:6,overflow:"hidden"}}>
+                  <div style={{padding:"6px 10px",borderBottom:"1px solid #3c3c3c",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <span style={{fontSize:9.5,color:"#888",fontFamily:"'Inter',sans-serif"}}>Suggested completion</span>
+                    <span style={{fontSize:9.5,color:"#4ec9b0",fontFamily:"'Inter',sans-serif"}}>{codeLines}/{CODE_LINES.length} lines</span>
+                  </div>
+                  <div style={{padding:"8px 10px",maxHeight:120,overflow:"hidden"}}>
+                    {CODE_LINES.slice(0,Math.min(codeLines,6)).map((line,i)=>(
+                      <div key={i} style={{lineHeight:"16px",color:"#aaa",fontSize:9.5,whiteSpace:"pre" as const}}>{line}</div>
+                    ))}
+                    {codeLines>6 && <div style={{color:"#555",fontSize:9.5}}>…+{codeLines-6} more lines</div>}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        {/* Accept bar */}
+        {(stage==="streaming"||stage==="done") && (
+          <div style={{padding:"10px 14px",borderTop:"1px solid #333",display:"flex",gap:7,flexShrink:0}}>
+            <div style={{flex:1,padding:"6px 10px",background:"rgba(78,201,176,0.12)",border:"1px solid rgba(78,201,176,0.3)",borderRadius:5,textAlign:"center" as const,cursor:"pointer"}}>
+              <span style={{fontSize:11,color:"#4ec9b0",fontFamily:"'Inter',sans-serif",fontWeight:500}}>Tab  ✓  Accept</span>
+            </div>
+            <div style={{padding:"6px 10px",background:"rgba(255,255,255,0.05)",border:"1px solid #444",borderRadius:5,cursor:"pointer"}}>
+              <span style={{fontSize:11,color:"#888",fontFamily:"'Inter',sans-serif"}}>Esc</span>
+            </div>
+          </div>
+        )}
+      </div>
+      <style>{`@keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}@keyframes dotPulse{0%,100%{transform:scale(1);opacity:0.4}50%{transform:scale(1.4);opacity:1}}`}</style>
+    </div>
+  );
+};
+
+// ─── LinearAISketch ───────────────────────────────────────────────────────────
+
+const LinearAISketch: FC = () => {
+  type Phase = "idle"|"typing"|"thinking"|"generated"|"created";
+  const [phase, setPhase]   = useState<Phase>("idle");
+  const [chars, setChars]   = useState(0);
+  const QUERY = "mobile checkout timeout when cart has 6+ items";
+
+  useEffect(()=>{
+    const cycle=()=>{
+      setPhase("idle"); setChars(0);
+      const t=setTimeout(()=>{
+        setPhase("typing"); let c=0;
+        const tick=setInterval(()=>{ c++; setChars(c);
+          if(c>=QUERY.length){ clearInterval(tick); setPhase("thinking");
+            setTimeout(()=>{setPhase("generated");
+              setTimeout(()=>{setPhase("created"); setTimeout(cycle,2800);},1400);
+            },900);
+          }
+        },32+Math.random()*18);
+      },1000);
+      return t;
+    };
+    const t=cycle(); return ()=>clearTimeout(t);
+  },[]);
+
+  const ISSUES = [
+    {id:"ENG-142",title:"Auth session expires on tab reload",priority:"🟠",label:"Bug",age:"2h"},
+    {id:"ENG-143",title:"Search results missing after filter reset",priority:"🔴",label:"Bug",age:"4h"},
+    {id:"ENG-144",title:"Dashboard chart lag on 90-day range",priority:"🟡",label:"Perf",age:"1d"},
+    {id:"ENG-145",title:"Export CSV truncates past 500 rows",priority:"🟠",label:"Bug",age:"1d"},
+  ];
+
+  return (
+    <div style={{width:"100%",height:"100%",background:"#f9f9f9",display:"flex",flexDirection:"column",overflow:"hidden",fontFamily:"'Inter','DM Sans',sans-serif",position:"relative"}}>
+      {/* Background: issue list */}
+      <div style={{padding:"16px 20px 8px",borderBottom:"1px solid #eee",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
+        <span style={{fontSize:13,fontWeight:600,color:"#111"}}>Engineering</span>
+        <span style={{fontSize:12,color:"#aaa",background:"#f0f0f0",borderRadius:4,padding:"2px 8px"}}>144 issues</span>
+        <div style={{marginLeft:"auto",display:"flex",gap:6}}>
+          {["Filter","Sort","Group"].map(l=><span key={l} style={{fontSize:11,color:"#999",cursor:"pointer"}}>{l}</span>)}
+        </div>
+      </div>
+      <div style={{flex:1,overflow:"hidden",opacity:phase==="idle"?1:0.35,transition:"opacity 0.3s"}}>
+        {ISSUES.map((issue)=>(
+          <div key={issue.id} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 20px",borderBottom:"1px solid #f0f0f0",background:"#fff",cursor:"pointer"}}>
+            <span style={{fontSize:14}}>{issue.priority}</span>
+            <span style={{fontSize:11,color:"#bbb",width:52,flexShrink:0,fontFamily:"'DM Mono',monospace"}}>{issue.id}</span>
+            <span style={{flex:1,fontSize:12.5,color:"#222",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap" as const}}>{issue.title}</span>
+            <span style={{fontSize:10,color:"#888",background:"#f5f5f5",border:"1px solid #e8e8e8",borderRadius:4,padding:"2px 7px"}}>{issue.label}</span>
+            <span style={{fontSize:11,color:"#ccc"}}>{issue.age}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Command palette overlay */}
+      {phase !== "idle" && (
+        <div style={{position:"absolute",inset:0,display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:40,background:"rgba(0,0,0,0.25)",backdropFilter:"blur(2px)"}}>
+          <div style={{width:"82%",maxWidth:520,background:"#fff",borderRadius:12,boxShadow:"0 12px 60px rgba(0,0,0,0.22)",border:"1px solid #e0e0e0",overflow:"hidden"}}>
+            {/* Input */}
+            <div style={{display:"flex",alignItems:"center",gap:10,padding:"13px 16px",borderBottom:"1px solid #f0f0f0"}}>
+              <span style={{fontSize:16,color:"#bbb"}}>✦</span>
+              <div style={{flex:1,fontSize:13.5,color:"#111",minHeight:18,letterSpacing:"-0.01em"}}>
+                {QUERY.slice(0,chars)}{phase==="typing"?"▌":""}
+              </div>
+              <span style={{fontSize:11,color:"#ccc",background:"#f5f5f5",border:"1px solid #e8e8e8",borderRadius:4,padding:"2px 7px"}}>⌘K</span>
+            </div>
+
+            {/* AI section header */}
+            {(phase==="thinking"||phase==="generated"||phase==="created") && (
+              <div style={{padding:"8px 16px",borderBottom:"1px solid #f5f5f5",display:"flex",alignItems:"center",gap:7}}>
+                {phase==="thinking" ? (
+                  <div style={{display:"flex",alignItems:"center",gap:7}}>
+                    {[0,0.18,0.36].map((d,i)=><div key={i} style={{width:5,height:5,borderRadius:"50%",background:"#7B68EE",animation:`dotPulse2 1s ${d}s ease-in-out infinite`}}/>)}
+                    <span style={{fontSize:11,color:"#aaa"}}>AI is analyzing…</span>
+                  </div>
+                ) : (
+                  <span style={{fontSize:11,color:"#7B68EE",fontWeight:600,letterSpacing:"0.04em",textTransform:"uppercase" as const}}>✦ AI Draft</span>
+                )}
+              </div>
+            )}
+
+            {/* Generated fields */}
+            {(phase==="generated"||phase==="created") && (
+              <div style={{padding:"12px 16px",display:"flex",flexDirection:"column",gap:9}}>
+                <div>
+                  <div style={{fontSize:10,color:"#bbb",marginBottom:3,letterSpacing:"0.04em",textTransform:"uppercase" as const}}>Title</div>
+                  <div style={{fontSize:13,color:"#111",fontWeight:500,letterSpacing:"-0.01em"}}>Mobile checkout timeout (6+ cart items)</div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                  {[["Priority","🔴 Urgent"],["Team","Frontend"],["Estimate","L · ~5 days"],["Cycle","Sprint 24"]].map(([k,v])=>(
+                    <div key={k}>
+                      <div style={{fontSize:10,color:"#bbb",marginBottom:2,letterSpacing:"0.04em",textTransform:"uppercase" as const}}>{k}</div>
+                      <div style={{fontSize:12,color:"#333"}}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <div style={{fontSize:10,color:"#bbb",marginBottom:3,letterSpacing:"0.04em",textTransform:"uppercase" as const}}>Labels</div>
+                  <div style={{display:"flex",gap:5}}>
+                    {["bug","performance","mobile","checkout"].map(l=>(
+                      <span key={l} style={{fontSize:10.5,color:"#555",background:"#f0f0f0",border:"1px solid #e0e0e0",borderRadius:4,padding:"2px 8px"}}>{l}</span>
+                    ))}
+                  </div>
+                </div>
+                <div style={{fontSize:11,color:"#888",lineHeight:1.55,borderLeft:"2px solid #e8e8e8",paddingLeft:10,fontStyle:"italic"}}>
+                  "Users with 6+ items in cart experience connection timeouts on the /checkout/confirm endpoint…"
+                </div>
+              </div>
+            )}
+
+            {/* CTA buttons */}
+            {(phase==="generated"||phase==="created") && (
+              <div style={{padding:"10px 16px",borderTop:"1px solid #f0f0f0",display:"flex",gap:8}}>
+                <div style={{padding:"8px 14px",border:"1px solid #e0e0e0",borderRadius:7,fontSize:12,color:"#888",cursor:"pointer"}}>Cancel</div>
+                <div style={{flex:1,padding:"8px 14px",background:phase==="created"?"#16a34a":"#111",borderRadius:7,fontSize:12,color:"white",fontWeight:600,textAlign:"center" as const,cursor:"pointer",transition:"background 0.4s",display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
+                  {phase==="created"?"✓ ENG-145 created":"✦ Create issue"}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      <style>{`@keyframes dotPulse2{0%,100%{transform:scale(1);opacity:0.4}50%{transform:scale(1.5);opacity:1}}`}</style>
+    </div>
+  );
+};
+
+// ─── GalleryPage ──────────────────────────────────────────────────────────────
 interface SketchCardProps { title:string; subtitle:string; height:number; children:React.ReactNode; index:number; }
 const SketchCard: FC<SketchCardProps> = ({ title, subtitle, height, children, index }) => (
   <div style={{opacity:0,animation:"fadeUp 0.6s ease forwards",animationDelay:`${index*0.12}s`}}>
@@ -863,10 +1262,41 @@ const GalleryPage: FC = () => (
     </div>
 
     <SectionLabel label="Prototyping Tools" index={4} />
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"24px",marginBottom:"32px",alignItems:"start"}}>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"24px",marginBottom:"64px",alignItems:"start"}}>
       <SketchCard title="protopie" subtitle="trigger/response interaction authoring" height={280} index={13}><ProtoPieSketch /></SketchCard>
       <SketchCard title="framer motion" subtitle="code-based animation and state variants" height={280} index={14}><FramerSketch /></SketchCard>
       <SketchCard title="cursor + claude code" subtitle="AI-accelerated prototype-to-production" height={280} index={15}><CursorAISketch /></SketchCard>
+    </div>
+
+    <SectionLabel label="AI Product Interactions" index={5} />
+    <div style={{display:"grid",gridTemplateColumns:"1fr 2fr",gap:"24px",marginBottom:"64px",alignItems:"start"}}>
+      <SketchCard title="notion AI — fill with AI" subtitle="database column filled row-by-row via AI translation · auto-update toggle · save flow" height={340} index={16}><NotionAIFillSketch /></SketchCard>
+      <SketchCard title="replit ghostwriter" subtitle="inline code generation · streaming suggestions · tab-to-accept interaction" height={340} index={17}><ReplitAISketch /></SketchCard>
+    </div>
+
+    <SectionLabel label="AI-Native Workflows" index={6} />
+    <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:"24px",marginBottom:"32px",alignItems:"start"}}>
+      <SketchCard title="linear — AI issue creation" subtitle="natural language → structured issue · priority, team, labels, estimate auto-populated" height={420} index={18}><LinearAISketch /></SketchCard>
+      <div style={{display:"flex",flexDirection:"column",gap:"24px"}}>
+        <div style={{background:"rgba(51,51,238,0.03)",border:"1px solid rgba(51,51,238,0.1)",borderRadius:"10px",padding:"20px",opacity:0,animation:"fadeUp 0.6s ease forwards",animationDelay:"0.3s"}}>
+          <p style={{fontFamily:"'DM Mono',monospace",fontSize:"10px",color:"#3333ee",letterSpacing:"0.06em",marginBottom:"10px",textTransform:"uppercase"}}>Pattern</p>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:"13px",color:"#666",lineHeight:1.65,fontWeight:300,marginBottom:"12px"}}>The best AI interactions reduce friction without removing agency. Users feel faster, not replaced.</p>
+          <div style={{display:"flex",flexDirection:"column",gap:"7px"}}>
+            {["Natural language → structured output","Streaming so users see AI thinking","One-action confirmation gate","Escape hatch always visible"].map(point => (
+              <div key={point} style={{display:"flex",alignItems:"flex-start",gap:"7px"}}>
+                <span style={{color:"#3333ee",fontSize:"9px",marginTop:"2px",flexShrink:0}}>◆</span>
+                <span style={{fontFamily:"'DM Mono',monospace",fontSize:"10px",color:"#888",lineHeight:1.5}}>{point}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{background:"#fafafa",border:"1px solid #ebebeb",borderRadius:"10px",padding:"20px",opacity:0,animation:"fadeUp 0.6s ease forwards",animationDelay:"0.42s"}}>
+          <p style={{fontFamily:"'DM Mono',monospace",fontSize:"10px",color:"#bbb",letterSpacing:"0.06em",marginBottom:"10px",textTransform:"uppercase"}}>Applied in</p>
+          {["JavaAI · code editor","Colgate · AI workflows","eBay · pipeline config"].map(item => (
+            <div key={item} style={{fontFamily:"'DM Mono',monospace",fontSize:"10px",color:"#aaa",padding:"5px 0",borderBottom:"1px solid #f0f0f0",lineHeight:1.4}}>{item}</div>
+          ))}
+        </div>
+      </div>
     </div>
   </div>
 );
@@ -1124,23 +1554,23 @@ function usePlayDrag(init: PlayVec2): [PlayVec2, (e: React.MouseEvent<HTMLDivEle
   return [pos, onMouseDown];
 }
 
-const PlayNode: FC<PlayNodeProps> = ({ pos, drag, width=300, label, icon, accent=false, delay=0, children }) => (
-  <div onMouseDown={drag} style={{ position:"absolute", left:pos.x, top:pos.y, width, background:"rgba(255,255,255,0.72)", border:"1px solid rgba(255,255,255,0.9)", borderRadius:18, boxShadow:accent?"0 0 0 1px rgba(61,127,255,0.2),0 8px 40px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.95)":"0 8px 40px rgba(0,0,0,0.10),inset 0 1px 0 rgba(255,255,255,0.95)", backdropFilter:"blur(24px) saturate(1.8)", WebkitBackdropFilter:"blur(24px) saturate(1.8)", cursor:"grab", userSelect:"none", zIndex:10, overflow:"hidden", animation:`playNodeIn 0.5s ${delay}s cubic-bezier(.16,1,.3,1) both` }}>
-    <div style={{ display:"flex", alignItems:"center", gap:8, padding:"10px 16px", borderBottom:"1px solid rgba(0,0,0,0.06)" }}>
-      <span style={{ fontSize:11, color:accent?"#3d7fff":"#aaa" }}>{icon}</span>
-      <span style={{ fontSize:10, fontWeight:600, color:accent?"#3d7fff":"#999", letterSpacing:"0.08em", textTransform:"uppercase", fontFamily:"'DM Mono',monospace" }}>{label}</span>
-      <div style={{ marginLeft:"auto", display:"flex", gap:5 }}>
-        <div style={{ width:8, height:8, borderRadius:"50%", background:"rgba(0,0,0,0.08)" }} />
-        <div style={{ width:8, height:8, borderRadius:"50%", background:"rgba(192,57,43,0.25)" }} />
-      </div>
-    </div>
+const PlayNode: FC<PlayNodeProps> = ({ pos, drag, width=300, label:_label, icon:_icon, accent=false, delay=0, children, onMouseEnter, onMouseLeave }) => (
+  <div onMouseDown={drag} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
+    style={{ position:"absolute", left:pos.x, top:pos.y, width,
+      border:`1.5px solid ${accent?"#f97316":"rgba(255,255,255,0.14)"}`,
+      borderRadius:0,
+      overflow:"hidden",
+      animation:`playNodeIn 0.5s ${delay}s cubic-bezier(.16,1,.3,1) both`,
+      cursor:"grab", userSelect:"none", zIndex:10,
+      boxShadow: accent ? "5px 5px 0 rgba(249,115,22,0.18)" : "4px 4px 0 rgba(0,0,0,0.7)",
+    }}>
     {children}
   </div>
 );
 
 const PlayWire: FC<{ x1:number; y1:number; x2:number; y2:number }> = ({ x1, y1, x2, y2 }) => {
   const cx = (x1+x2)/2;
-  return <path d={`M${x1},${y1} C${cx},${y1} ${cx},${y2} ${x2},${y2}`} stroke="rgba(100,140,255,0.3)" strokeWidth={1.2} fill="none" strokeDasharray="4 4" />;
+  return <path d={`M${x1},${y1} C${cx},${y1} ${cx},${y2} ${x2},${y2}`} stroke="rgba(249,115,22,0.28)" strokeWidth={1} fill="none" strokeDasharray="5 4" />;
 };
 
 // ─── Inline Book Cover SVGs ───────────────────────────────────────────────────
@@ -1271,181 +1701,783 @@ const PrincipleToolIcon: FC = () => (
   </svg>
 );
 
+// ─── PlayPage art: Album covers, Type posters, Movie posters ─────────────────
+
+const AlbumArt: FC<{ albumKey: string }> = ({ albumKey }) => {
+  const S = { borderRadius:5, boxShadow:"0 6px 20px rgba(0,0,0,0.45)", display:"block" as const, flexShrink:0 };
+  if (albumKey==="nevermind") return (
+    <svg viewBox="0 0 90 90" width="90" height="90" style={S}>
+      <defs>
+        <radialGradient id="nv1" cx="50%" cy="38%"><stop offset="0%" stopColor="#4cb8e0"/><stop offset="55%" stopColor="#1a7ab0"/><stop offset="100%" stopColor="#0a3d6b"/></radialGradient>
+        <linearGradient id="nv2" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stopColor="#0a3060"/><stop offset="100%" stopColor="#3098c8"/></linearGradient>
+      </defs>
+      <rect width="90" height="90" fill="url(#nv2)"/>
+      <ellipse cx="45" cy="52" rx="38" ry="6" fill="rgba(255,255,255,0.07)"/>
+      <ellipse cx="45" cy="60" rx="30" ry="4" fill="rgba(255,255,255,0.05)"/>
+      {/* Baby swimming */}
+      <circle cx="42" cy="52" r="6" fill="#f5d8a8"/>
+      <path d="M36,54 Q30,56 24,52" stroke="#f5d8a8" strokeWidth="3" fill="none" strokeLinecap="round"/>
+      <path d="M48,54 Q54,56 58,50" stroke="#f5d8a8" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+      <path d="M40,58 L36,66 M44,58 L46,66" stroke="#f5d8a8" strokeWidth="2.5" strokeLinecap="round"/>
+      {/* Hook + dollar bill */}
+      <line x1="56" y1="16" x2="56" y2="42" stroke="rgba(255,255,255,0.55)" strokeWidth="0.8"/>
+      <path d="M56,42 Q62,46 60,52" stroke="rgba(255,255,255,0.55)" strokeWidth="0.8" fill="none"/>
+      <rect x="46" y="14" width="18" height="10" rx="1" fill="#85a83a"/>
+      <text x="55" y="22" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="5" fontFamily="serif" fontWeight="bold">$</text>
+      {/* Water ripples */}
+      {[44,50,56].map((y,i)=><path key={i} d={`M10,${y} Q22,${y-3} 35,${y} Q48,${y+3} 60,${y} Q72,${y-3} 80,${y}`} stroke="rgba(255,255,255,0.06)" strokeWidth="0.7" fill="none"/>)}
+      <text x="45" y="82" textAnchor="middle" fill="rgba(255,255,255,0.92)" fontSize="7" fontFamily="'Arial Black',sans-serif" fontWeight="900" letterSpacing="0.5">NEVERMIND</text>
+      <text x="45" y="74" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="5" fontFamily="Arial,sans-serif" letterSpacing="1.5">NIRVANA</text>
+    </svg>
+  );
+  if (albumKey==="am") return (
+    <svg viewBox="0 0 90 90" width="90" height="90" style={S}>
+      <rect width="90" height="90" fill="#0a0a0a"/>
+      {/* Oscilloscope interference lines */}
+      {Array.from({length:20},(_,i)=>{
+        const x=4+i*4.3; const h=18+Math.sin(i*1.7)*12+Math.cos(i*0.9)*8;
+        return <rect key={i} x={x} y={(90-h*0.7)/2} width={i%3===0?2.5:1.8} height={h*0.7} rx="0.5"
+          fill={i%2===0?"rgba(255,255,255,0.75)":"rgba(220,60,30,0.55)"}/>;
+      })}
+      <rect x="0" y="30" width="90" height="30" fill="rgba(0,0,0,0.65)"/>
+      <text x="45" y="52" textAnchor="middle" fill="white" fontSize="26" fontFamily="'Arial Black',sans-serif" fontWeight="900" letterSpacing="-1">AM</text>
+      <text x="45" y="80" textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize="4.5" fontFamily="Arial,sans-serif" letterSpacing="1.2">ARCTIC MONKEYS</text>
+    </svg>
+  );
+  if (albumKey==="isthisit") return (
+    <svg viewBox="0 0 90 90" width="90" height="90" style={S}>
+      <defs><linearGradient id="str" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#c4956a"/><stop offset="100%" stopColor="#9a6640"/></linearGradient></defs>
+      <rect width="90" height="90" fill="url(#str)"/>
+      {/* Black leather glove shape */}
+      <path d="M22,75 L22,42 Q22,30 32,28 Q40,26 44,32 L44,38 Q50,30 56,30 Q62,28 62,36 L62,40 Q67,33 72,35 Q78,38 76,46 L70,64 Q66,74 58,78 L28,78 Z" fill="#111" stroke="#0a0a0a" strokeWidth="1"/>
+      {/* Glove highlights/texture */}
+      <path d="M26,72 Q28,50 30,40" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+      <path d="M34,72 Q36,50 37,36" stroke="rgba(255,255,255,0.06)" strokeWidth="1" fill="none" strokeLinecap="round"/>
+      <text x="45" y="14" textAnchor="middle" fill="rgba(0,0,0,0.7)" fontSize="6" fontFamily="'Arial Black',sans-serif" fontWeight="900" letterSpacing="-0.2">THE STROKES</text>
+      <text x="45" y="22" textAnchor="middle" fill="rgba(0,0,0,0.55)" fontSize="4.5" fontFamily="Arial,sans-serif" letterSpacing="0.3">IS THIS IT</text>
+    </svg>
+  );
+  if (albumKey==="bucktick") return (
+    <svg viewBox="0 0 90 90" width="90" height="90" style={S}>
+      <rect width="90" height="90" fill="#0a0808"/>
+      {/* Ornate frame */}
+      <rect x="4" y="4" width="82" height="82" fill="none" stroke="rgba(180,150,80,0.5)" strokeWidth="0.8"/>
+      <rect x="7" y="7" width="76" height="76" fill="none" stroke="rgba(180,150,80,0.3)" strokeWidth="0.5"/>
+      {/* Chrysanthemum / art nouveau flower */}
+      {Array.from({length:12},(_,i)=>{
+        const a=(i/12)*Math.PI*2;
+        return <path key={i} d={`M45,45 Q${45+18*Math.cos(a-0.2)},${45+18*Math.sin(a-0.2)} ${45+24*Math.cos(a)},${45+24*Math.sin(a)} Q${45+18*Math.cos(a+0.2)},${45+18*Math.sin(a+0.2)} 45,45`} fill="rgba(180,140,60,0.35)" stroke="rgba(200,160,70,0.5)" strokeWidth="0.5"/>;
+      })}
+      <circle cx="45" cy="45" r="12" fill="none" stroke="rgba(180,150,80,0.5)" strokeWidth="0.8"/>
+      <circle cx="45" cy="45" r="6" fill="rgba(180,150,80,0.2)" stroke="rgba(200,170,80,0.6)" strokeWidth="0.7"/>
+      <text x="45" y="78" textAnchor="middle" fill="rgba(180,150,70,0.9)" fontSize="6.5" fontFamily="Georgia,serif" fontWeight="bold" letterSpacing="1">BUCK-TICK</text>
+      <text x="45" y="86" textAnchor="middle" fill="rgba(180,150,70,0.55)" fontSize="5" fontFamily="Georgia,serif" letterSpacing="0.5">悪の華</text>
+    </svg>
+  );
+  if (albumKey==="akfg") return (
+    <svg viewBox="0 0 90 90" width="90" height="90" style={S}>
+      <rect width="90" height="90" fill="#1a1a2a"/>
+      {/* Circuit board / electronic aesthetic */}
+      {[[10,20,60,20],[60,20,60,55],[10,55,60,55],[10,20,10,55]].map(([x1,y1,x2,y2],i)=>
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(232,82,26,0.4)" strokeWidth="1"/>
+      )}
+      {/* Speaker/amp circles */}
+      <circle cx="35" cy="38" r="18" fill="none" stroke="rgba(232,82,26,0.6)" strokeWidth="1.5"/>
+      <circle cx="35" cy="38" r="12" fill="none" stroke="rgba(232,82,26,0.4)" strokeWidth="1"/>
+      <circle cx="35" cy="38" r="6" fill="rgba(232,82,26,0.3)" stroke="rgba(232,82,26,0.7)" strokeWidth="1"/>
+      <circle cx="35" cy="38" r="2" fill="#e8521a"/>
+      {/* PCB nodes */}
+      {[[10,20],[60,20],[60,55],[10,55],[35,20],[35,55],[10,38],[60,38]].map(([cx,cy],i)=>
+        <circle key={i} cx={cx} cy={cy} r="2.5" fill="#e8521a" opacity="0.7"/>
+      )}
+      <text x="45" y="73" textAnchor="middle" fill="rgba(232,82,26,0.9)" fontSize="5" fontFamily="'Arial Black',sans-serif" fontWeight="900" letterSpacing="0.2">ASIAN KUNG-FU GEN.</text>
+      <text x="45" y="82" textAnchor="middle" fill="rgba(255,255,255,0.35)" fontSize="4" fontFamily="Arial,sans-serif">崩壊アンプリファー</text>
+    </svg>
+  );
+  if (albumKey==="spitz") return (
+    <svg viewBox="0 0 90 90" width="90" height="90" style={S}>
+      <defs>
+        <linearGradient id="spz" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#3a7fc4"/><stop offset="60%" stopColor="#6ab0e4"/><stop offset="100%" stopColor="#a8d4f0"/>
+        </linearGradient>
+      </defs>
+      <rect width="90" height="90" fill="url(#spz)"/>
+      {/* Clouds */}
+      <ellipse cx="25" cy="28" rx="18" ry="11" fill="rgba(255,255,255,0.82)"/>
+      <ellipse cx="38" cy="24" rx="13" ry="9" fill="rgba(255,255,255,0.88)"/>
+      <ellipse cx="14" cy="32" rx="10" ry="7" fill="rgba(255,255,255,0.75)"/>
+      <ellipse cx="68" cy="35" rx="16" ry="10" fill="rgba(255,255,255,0.78)"/>
+      <ellipse cx="80" cy="30" rx="11" ry="8" fill="rgba(255,255,255,0.72)"/>
+      <ellipse cx="57" cy="38" rx="10" ry="7" fill="rgba(255,255,255,0.7)"/>
+      {/* Ground hint */}
+      <rect x="0" y="70" width="90" height="20" fill="rgba(100,160,80,0.3)"/>
+      <text x="45" y="60" textAnchor="middle" fill="rgba(20,60,120,0.75)" fontSize="9" fontFamily="Georgia,serif" fontStyle="italic" fontWeight="bold">スピッツ</text>
+      <text x="45" y="68" textAnchor="middle" fill="rgba(20,60,120,0.6)" fontSize="7" fontFamily="Georgia,serif" fontStyle="italic">Robinson</text>
+    </svg>
+  );
+  return null;
+};
+
+const TypePoster: FC<{ posterKey: string }> = ({ posterKey }) => {
+  const S = { borderRadius:3, boxShadow:"0 4px 14px rgba(0,0,0,0.3)", display:"block" as const, flexShrink:0 };
+  if (posterKey==="A") return (
+    <svg viewBox="0 0 56 80" width="56" height="80" style={S}>
+      <rect width="56" height="80" fill="#0d3535"/>
+      <text x="28" y="64" textAnchor="middle" fill="#e8521a" fontSize="72" fontFamily="Georgia,serif" fontWeight="bold" letterSpacing="-2" dy="0" style={{paintOrder:"stroke"} as React.CSSProperties}>A</text>
+      <line x1="8" y1="72" x2="48" y2="72" stroke="rgba(232,82,26,0.3)" strokeWidth="0.5"/>
+      <text x="28" y="77" textAnchor="middle" fill="rgba(255,255,255,0.25)" fontSize="3.5" fontFamily="'DM Mono',monospace" letterSpacing="1">TYPEFACE POSTER</text>
+    </svg>
+  );
+  if (posterKey==="B") return (
+    <svg viewBox="0 0 56 80" width="56" height="80" style={S}>
+      <rect width="56" height="80" fill="#1a3020"/>
+      <text x="4" y="68" fill="#e8e010" fontSize="78" fontFamily="'Arial Black',sans-serif" fontWeight="900" letterSpacing="-4">B</text>
+      <rect x="0" y="58" width="56" height="22" fill="#e8e010"/>
+      <text x="28" y="72" textAnchor="middle" fill="#1a3020" fontSize="6" fontFamily="'DM Mono',monospace" fontWeight="bold" letterSpacing="1">GROTESK</text>
+    </svg>
+  );
+  if (posterKey==="K") return (
+    <svg viewBox="0 0 56 80" width="56" height="80" style={S}>
+      <rect width="56" height="80" fill="#7c4da0"/>
+      <rect x="0" y="44" width="56" height="36" fill="#b0b0b8"/>
+      <text x="3" y="58" fill="rgba(255,255,255,0.15)" fontSize="72" fontFamily="Georgia,serif" fontWeight="bold">K</text>
+      <text x="3" y="58" fill="#c0b8d0" fontSize="72" fontFamily="Georgia,serif" fontWeight="bold" clipPath="url(#kb)">K</text>
+      <clipPath id="kb"><rect x="0" y="44" width="56" height="36"/></clipPath>
+      <line x1="0" y1="44" x2="56" y2="44" stroke="white" strokeWidth="0.8"/>
+    </svg>
+  );
+  if (posterKey==="M") return (
+    <svg viewBox="0 0 56 80" width="56" height="80" style={S}>
+      <rect width="56" height="80" fill="#e8521a"/>
+      <text x="28" y="62" textAnchor="middle" fill="#0d1f3a" fontSize="68" fontFamily="'Arial Black',sans-serif" fontWeight="900" letterSpacing="-3">M</text>
+      <rect x="0" y="66" width="56" height="14" fill="#0d1f3a"/>
+      <text x="28" y="76" textAnchor="middle" fill="rgba(232,82,26,0.8)" fontSize="5.5" fontFamily="'DM Mono',monospace" letterSpacing="2">MODULAR</text>
+    </svg>
+  );
+  if (posterKey==="S") return (
+    <svg viewBox="0 0 56 80" width="56" height="80" style={S}>
+      <rect width="56" height="80" fill="#e8521a"/>
+      <text x="28" y="62" textAnchor="middle" fill="rgba(255,255,255,0.12)" fontSize="82" fontFamily="Georgia,serif" fontStyle="italic" fontWeight="bold" letterSpacing="-2">S</text>
+      <text x="27" y="60" textAnchor="middle" fill="white" fontSize="82" fontFamily="Georgia,serif" fontStyle="italic" fontWeight="bold" letterSpacing="-2" opacity="0.9">S</text>
+      <text x="28" y="76" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="4" fontFamily="'DM Mono',monospace" letterSpacing="1.5">ITALIC SERIF</text>
+    </svg>
+  );
+  if (posterKey==="H") return (
+    <svg viewBox="0 0 56 80" width="56" height="80" style={S}>
+      <rect width="56" height="80" fill="#c0392b"/>
+      <text x="28" y="62" textAnchor="middle" fill="#c0392b" fontSize="72" fontFamily="'Arial Black',sans-serif" fontWeight="900" stroke="#8b1a0e" strokeWidth="2">H</text>
+      <text x="28" y="62" textAnchor="middle" fill="rgba(255,255,255,0.08)" fontSize="72" fontFamily="'Arial Black',sans-serif" fontWeight="900">H</text>
+      <line x1="4" y1="36" x2="52" y2="36" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5"/>
+      <text x="28" y="76" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="4" fontFamily="'DM Mono',monospace" letterSpacing="1.5">EXTENDED</text>
+    </svg>
+  );
+  return null;
+};
+
+const MoviePoster: FC<{ filmKey: string }> = ({ filmKey }) => {
+  const S = { borderRadius:4, boxShadow:"0 5px 18px rgba(0,0,0,0.45)", display:"block" as const, flexShrink:0 };
+  if (filmKey==="pulpfiction") return (
+    <svg viewBox="0 0 58 84" width="58" height="84" style={S}>
+      <rect width="58" height="84" fill="#f5e642"/>
+      <rect x="0" y="0" width="58" height="52" fill="#111"/>
+      <line x1="10" y1="18" x2="48" y2="18" stroke="rgba(255,255,255,0.12)" strokeWidth="0.5"/>
+      <ellipse cx="29" cy="34" rx="10" ry="13" fill="#2a2a2a"/>
+      <ellipse cx="25" cy="26" rx="3" ry="4" fill="#1a1a1a"/>
+      <line x1="20" y1="30" x2="12" y2="44" stroke="#888" strokeWidth="1.2"/>
+      <text x="29" y="62" textAnchor="middle" fill="#111" fontSize="7.5" fontFamily="'Arial Black',sans-serif" fontWeight="900" letterSpacing="-0.3">PULP</text>
+      <text x="29" y="71" textAnchor="middle" fill="#111" fontSize="7.5" fontFamily="'Arial Black',sans-serif" fontWeight="900" letterSpacing="-0.3">FICTION</text>
+      <line x1="6" y1="74" x2="52" y2="74" stroke="#111" strokeWidth="0.6"/>
+      <text x="29" y="80" textAnchor="middle" fill="rgba(0,0,0,0.5)" fontSize="3.5" fontFamily="Arial,sans-serif" letterSpacing="0.8">TARANTINO  1994</text>
+    </svg>
+  );
+  if (filmKey==="bigfish") return (
+    <svg viewBox="0 0 58 84" width="58" height="84" style={S}>
+      <defs>
+        <linearGradient id="bfsky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#1a4a8a"/><stop offset="55%" stopColor="#2e7bc4"/><stop offset="100%" stopColor="#5bb3e8"/>
+        </linearGradient>
+      </defs>
+      <rect width="58" height="84" fill="url(#bfsky)"/>
+      <ellipse cx="29" cy="72" rx="26" ry="5" fill="rgba(100,180,255,0.35)"/>
+      <ellipse cx="29" cy="68" rx="22" ry="8" fill="rgba(80,160,240,0.25)"/>
+      <path d="M8 62 Q18 44 29 48 Q40 44 50 62 Q40 58 29 60 Q18 58 8 62Z" fill="rgba(255,200,100,0.9)"/>
+      <circle cx="22" cy="53" r="1.5" fill="rgba(0,0,0,0.7)"/>
+      <path d="M4 56 Q6 46 8 56" fill="rgba(255,180,80,0.7)"/>
+      <path d="M52 56 Q54 46 54 56" fill="rgba(255,180,80,0.7)"/>
+      <text x="29" y="18" textAnchor="middle" fill="rgba(255,255,255,0.9)" fontSize="7" fontFamily="Georgia,serif" fontStyle="italic" fontWeight="bold" letterSpacing="0.3">Big Fish</text>
+      <text x="29" y="27" textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="3.5" fontFamily="Georgia,serif" fontStyle="italic">Tim Burton  2003</text>
+      <text x="29" y="80" textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize="3.5" fontFamily="Arial,sans-serif" letterSpacing="0.5">A Story of Mythic Proportions</text>
+    </svg>
+  );
+  if (filmKey==="clockwork") return (
+    <svg viewBox="0 0 58 84" width="58" height="84" style={S}>
+      <rect width="58" height="84" fill="#f5f0e8"/>
+      <rect x="0" y="0" width="58" height="10" fill="#1a1a1a"/>
+      <text x="29" y="8" textAnchor="middle" fill="white" fontSize="4.5" fontFamily="'Arial',sans-serif" fontWeight="bold" letterSpacing="0.5">STANLEY KUBRICK</text>
+      <ellipse cx="29" cy="32" rx="15" ry="16" fill="#1a1a1a"/>
+      <ellipse cx="22" cy="28" rx="5.5" ry="6" fill="white"/>
+      <ellipse cx="36" cy="28" rx="5.5" ry="6" fill="white"/>
+      <circle cx="22" cy="28" r="3.5" fill="#1a1a1a"/>
+      <circle cx="36" cy="28" r="3.5" fill="#1a1a1a"/>
+      <circle cx="23" cy="27" r="1.2" fill="white"/>
+      <circle cx="37" cy="27" r="1.2" fill="white"/>
+      <line x1="14" y1="24" x2="8" y2="18" stroke="#1a1a1a" strokeWidth="1.5" strokeLinecap="round"/>
+      <ellipse cx="29" cy="46" rx="7" ry="3" fill="#1a1a1a"/>
+      <rect x="22" y="46" width="14" height="6" fill="#1a1a1a" rx="1"/>
+      <rect x="10" y="56" width="38" height="2" fill="#e8521a"/>
+      <text x="29" y="67" textAnchor="middle" fill="#1a1a1a" fontSize="5.5" fontFamily="'Arial Black',sans-serif" fontWeight="900" letterSpacing="-0.2">A CLOCKWORK</text>
+      <text x="29" y="74" textAnchor="middle" fill="#1a1a1a" fontSize="5.5" fontFamily="'Arial Black',sans-serif" fontWeight="900" letterSpacing="-0.2">ORANGE</text>
+      <text x="29" y="81" textAnchor="middle" fill="rgba(0,0,0,0.4)" fontSize="3.5" fontFamily="Arial,sans-serif" letterSpacing="0.5">KUBRICK  1971</text>
+    </svg>
+  );
+  return null;
+};
+
+// ─── Robot3DSvg — isometric faithful recreation of the reference robot ────────
+
+const Robot3DSvg: FC = () => (
+  <svg viewBox="0 0 268 228" width="240" height="204" style={{display:"block",overflow:"visible"}}>
+    {/* Ground shadow */}
+    <ellipse cx="132" cy="220" rx="95" ry="9" fill="rgba(0,0,0,0.13)"/>
+
+    {/* ── WHEELS ── */}
+    {/* Left wheel — rubber tread, 3/4 view */}
+    <ellipse cx="72" cy="185" rx="26" ry="17" fill="#090909" stroke="#1c1c1c" strokeWidth="1.2"/>
+    <ellipse cx="72" cy="185" rx="11" ry="8" fill="#111"/>
+    {[0,40,80,120,160,200,240,280,320].map((a,i)=>{
+      const r=Math.PI*a/180; return <line key={i} x1={72+11*Math.cos(r)} y1={185+11*Math.sin(r)*0.65} x2={72+25*Math.cos(r)} y2={185+25*Math.sin(r)*0.65} stroke="#171717" strokeWidth="1.8" strokeLinecap="round"/>;
+    })}
+    {/* Right wheel */}
+    <ellipse cx="192" cy="181" rx="21" ry="14" fill="#090909" stroke="#1c1c1c" strokeWidth="1"/>
+    <ellipse cx="192" cy="181" rx="9" ry="6" fill="#111"/>
+    {[0,60,120,180,240,300].map((a,i)=>{
+      const r=Math.PI*a/180; return <line key={i} x1={192+9*Math.cos(r)} y1={181+9*Math.sin(r)*0.67} x2={192+20*Math.cos(r)} y2={181+20*Math.sin(r)*0.67} stroke="#171717" strokeWidth="1.5" strokeLinecap="round"/>;
+    })}
+
+    {/* ── MAIN BODY — isometric 3/4 perspective ── */}
+    {/* Top face (slightly lighter) */}
+    <path d="M48,106 L202,106 L220,95 L66,95 Z" fill="#131313" stroke="#1a1a1a" strokeWidth="0.8"/>
+    {/* Front face */}
+    <path d="M48,106 L202,106 L202,178 L48,178 Z" fill="#0d0d0d" stroke="#1c1c1c" strokeWidth="1"/>
+    {/* Right side face */}
+    <path d="M202,106 L220,95 L220,167 L202,178 Z" fill="#0a0a0a" stroke="#141414" strokeWidth="0.8"/>
+    {/* Body front panels */}
+    <rect x="55" y="113" width="52" height="26" rx="2" fill="#080808" stroke="#1d1d1d" strokeWidth="0.7"/>
+    {[0,1,2,3].map(i=><line key={i} x1="58" y1={118+i*5.5} x2="105" y2={118+i*5.5} stroke="#141414" strokeWidth="0.7" strokeLinecap="round"/>)}
+    <rect x="114" y="113" width="44" height="26" rx="2" fill="#080808" stroke="#1d1d1d" strokeWidth="0.7"/>
+    <rect x="164" y="113" width="32" height="26" rx="2" fill="#080808" stroke="#1d1d1d" strokeWidth="0.7"/>
+    {[0,1,2].map(i=><rect key={i} x="167" y={116+i*7} width="26" height="4" rx="1" fill="#0d0d0d"/>)}
+    {/* Bottom accent stripe */}
+    <rect x="48" y="170" width="154" height="8" fill="#090909" stroke="#111" strokeWidth="0.7"/>
+    <rect x="48" y="170" width="154" height="2.5" fill="#1a3a6b" opacity="0.45"/>
+    {/* Left body extension panel */}
+    <rect x="30" y="120" width="20" height="16" rx="2" fill="#0c0c0c" stroke="#1a1a1a" strokeWidth="0.8"/>
+
+    {/* ── LIDAR CYLINDER on body top ── */}
+    <ellipse cx="130" cy="93" rx="30" ry="10" fill="#0f0f0f" stroke="#1c1c1c" strokeWidth="1"/>
+    <path d="M100,93 L100,111 L160,111 L160,93" fill="#0c0c0c"/>
+    <ellipse cx="130" cy="111" rx="30" ry="10" fill="#0d0d0d" stroke="#141414" strokeWidth="0.7"/>
+    <ellipse cx="130" cy="100" rx="14" ry="5" fill="#0a0a0a" stroke="#1a1a1a" strokeWidth="0.8"/>
+    {/* Cylinder ribs */}
+    {[-20,-10,0,10,20].map(dx=><line key={dx} x1={130+dx} y1={92} x2={130+dx} y2={112} stroke="#111" strokeWidth="0.6" opacity="0.5"/>)}
+
+    {/* ── HEAD GIMBAL MOUNT — two parallel rods ── */}
+    <rect x="118" y="56" width="5.5" height="38" rx="2" fill="#111" stroke="#1a1a1a" strokeWidth="0.6"/>
+    <rect x="138" y="56" width="5.5" height="38" rx="2" fill="#111" stroke="#1a1a1a" strokeWidth="0.6"/>
+    <rect x="116" y="66" width="30" height="4" rx="1.5" fill="#0f0f0f" stroke="#1a1a1a" strokeWidth="0.5"/>
+    {/* Cable/wire from mount to head */}
+    <path d="M129,58 C126,54 123,50 120,46" stroke="#0e0e0e" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+    <path d="M134,58 C137,53 140,49 143,46" stroke="#0e0e0e" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
+
+    {/* ── DISPLAY HEAD UNIT ── */}
+    {/* Main housing — trapezoidal, slightly angled */}
+    <path d="M102,38 L165,38 L167,58 L100,58 Z" fill="#0e0e0e" stroke="#1c1c1c" strokeWidth="1.2"/>
+    {/* Side face (right) giving depth */}
+    <path d="M165,38 L172,33 L174,53 L167,58 Z" fill="#0b0b0b" stroke="#141414" strokeWidth="0.8"/>
+    {/* Top edge */}
+    <path d="M102,38 L165,38 L172,33 L109,33 Z" fill="#111" stroke="#1a1a1a" strokeWidth="0.6"/>
+    {/* WHITE DISPLAY SCREEN — the most prominent feature */}
+    <path d="M110,40 L157,40 L159,56 L108,56 Z" fill="#e8e8e8" stroke="#d0d0d0" strokeWidth="0.5"/>
+    {/* Screen reflection highlight */}
+    <path d="M112,41 L142,41 L144,50 L114,50 Z" fill="rgba(255,255,255,0.38)"/>
+    <path d="M114,41 L125,41 L126,56 L113,56 Z" fill="rgba(255,255,255,0.14)"/>
+    {/* Small side cameras on head */}
+    <circle cx="104" cy="48" r="4" fill="#080808" stroke="#1c1c1c" strokeWidth="0.8"/>
+    <circle cx="104" cy="48" r="2" fill="#060606"/>
+    <circle cx="168" cy="46" r="3.5" fill="#080808" stroke="#1c1c1c" strokeWidth="0.7"/>
+    {/* Head bottom edge detail */}
+    <rect x="100" y="56" width="68" height="3" rx="0.8" fill="#0a0a0a"/>
+
+    {/* ── ROBOTIC ARM — right side articulated mechanism ── */}
+    {/* Upper arm mount bracket on body right */}
+    <path d="M200,116 L224,106 L226,115 L202,125 Z" fill="#111" stroke="#1c1c1c" strokeWidth="0.8"/>
+    {/* Upper pivot joint */}
+    <circle cx="225" cy="110" r="7" fill="#0d0d0d" stroke="#1c1c1c" strokeWidth="1.2"/>
+    <circle cx="225" cy="110" r="3.5" fill="#080808" stroke="#1a1a1a" strokeWidth="0.7"/>
+    {/* Diagonal arm link going down */}
+    <path d="M222,116 L214,148 L209,146 L217,114 Z" fill="#111" stroke="#1c1c1c" strokeWidth="0.7"/>
+    {/* Elbow joint */}
+    <circle cx="211" cy="150" r="8.5" fill="#0d0d0d" stroke="#1c1c1c" strokeWidth="1.2"/>
+    <circle cx="211" cy="150" r="4" fill="#080808" stroke="#1a1a1a" strokeWidth="0.7"/>
+    <circle cx="211" cy="150" r="1.5" fill="#060606"/>
+    {/* Return arm link going back to body */}
+    <path d="M207,145 L198,118 L203,116 L212,143 Z" fill="#111" stroke="#1c1c1c" strokeWidth="0.7"/>
+    {/* End effector / camera mount at top of arm */}
+    <rect x="196" y="112" width="14" height="10" rx="2.5" fill="#0d0d0d" stroke="#1c1c1c" strokeWidth="0.9"/>
+    <circle cx="203" cy="117" r="3.5" fill="#080808" stroke="#1a1a1a" strokeWidth="0.7"/>
+    <circle cx="203" cy="117" r="1.5" fill="#1a3a6b" opacity="0.8"/>
+  </svg>
+);
+
+// ─── AnimatedRobot ────────────────────────────────────────────────────────────
+
+const AnimatedRobot: FC = () => {
+  const [view, setView] = useState<"animated"|"3d">("animated");
+
+  return (
+    <div style={{width:"100%",height:"100%",position:"relative",background:"#fff",overflow:"hidden"}}>
+      {/* Toggle hint */}
+      <div
+        onClick={() => setView(v => v==="animated" ? "3d" : "animated")}
+        style={{position:"absolute",top:10,right:12,zIndex:20,display:"flex",alignItems:"center",gap:5,background:"rgba(0,0,0,0.06)",border:"1px solid rgba(0,0,0,0.1)",borderRadius:20,padding:"4px 10px",cursor:"pointer",userSelect:"none",transition:"background 0.2s"}}
+      >
+        <span style={{fontSize:9,color:"#888",fontFamily:"'DM Mono',monospace",letterSpacing:"0.06em"}}>{view==="animated" ? "3D view →" : "← animate"}</span>
+      </div>
+
+      {view==="animated" ? (
+        /* ── ANIMATED DANCING ROBOT ── */
+        <div style={{width:"100%",height:"100%",minHeight:220,display:"flex",overflow:"hidden"}}>
+          <style>{`
+            @keyframes rBounce{0%,100%{transform:translateY(0) rotate(0deg)}30%{transform:translateY(-9px) rotate(-2deg)}70%{transform:translateY(-4px) rotate(1.5deg)}}
+            @keyframes rHead{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(12deg)}}
+            @keyframes rArm{0%,100%{transform:rotate(0deg)}40%{transform:rotate(-50deg)}70%{transform:rotate(20deg)}}
+            @keyframes rWheel{to{transform:rotate(360deg)}}
+            @keyframes rAntenna{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:0.5}}
+            @keyframes rLed{0%,42%,58%,100%{opacity:1}50%{opacity:0.12}}
+            @keyframes rScan{0%,100%{opacity:0.65}50%{opacity:1}}
+            @keyframes rPulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,0.4)}70%{box-shadow:0 0 0 8px rgba(37,99,235,0)}}
+            @keyframes rThought{0%,100%{opacity:0.9;transform:scale(1)}50%{opacity:1;transform:scale(1.02)}}
+          `}</style>
+          {/* Left: Robot SVG */}
+          <div style={{flex:"0 0 52%",display:"flex",alignItems:"center",justifyContent:"center",paddingLeft:12}}>
+            <div style={{animation:"rBounce 1.85s ease-in-out infinite",position:"relative"}}>
+              {/* Thought bubble */}
+              <div style={{position:"absolute",top:-38,left:60,background:"#fff",border:"1px solid #e0e0e0",borderRadius:8,padding:"4px 9px",whiteSpace:"nowrap" as const,boxShadow:"0 2px 8px rgba(0,0,0,0.07)",animation:"rThought 3s ease-in-out infinite",zIndex:5}}>
+                <div style={{fontSize:8.5,color:"#555",fontFamily:"'DM Mono',monospace"}}>need more</div>
+                <div style={{fontSize:8.5,color:"#2563eb",fontWeight:700,fontFamily:"'DM Mono',monospace"}}>actuators 🔧</div>
+                <div style={{position:"absolute",bottom:-5,left:16,width:7,height:7,background:"#fff",border:"1px solid #e0e0e0",transform:"rotate(45deg)",borderTop:"none",borderRight:"none"}}/>
+              </div>
+              <svg viewBox="0 0 170 176" width="148" height="154" style={{overflow:"visible"}}>
+                <ellipse cx="90" cy="170" rx="52" ry="6" fill="rgba(0,0,0,0.07)"/>
+                <g style={{transformOrigin:"56px 150px",animation:"rWheel 0.85s linear infinite"}}>
+                  <circle cx="56" cy="150" r="16" fill="#0a0a0a" stroke="#1d1d1d" strokeWidth="1.5"/>
+                  <circle cx="56" cy="150" r="5.5" fill="#141414"/>
+                  <line x1="56" y1="134" x2="56" y2="166" stroke="#222" strokeWidth="1.8"/>
+                  <line x1="40" y1="150" x2="72" y2="150" stroke="#222" strokeWidth="1.8"/>
+                  <line x1="44" y1="138" x2="68" y2="162" stroke="#1a1a1a" strokeWidth="1.2"/>
+                  <line x1="68" y1="138" x2="44" y2="162" stroke="#1a1a1a" strokeWidth="1.2"/>
+                </g>
+                <g style={{transformOrigin:"124px 150px",animation:"rWheel 0.85s linear infinite"}}>
+                  <circle cx="124" cy="150" r="16" fill="#0a0a0a" stroke="#1d1d1d" strokeWidth="1.5"/>
+                  <circle cx="124" cy="150" r="5.5" fill="#141414"/>
+                  <line x1="124" y1="134" x2="124" y2="166" stroke="#222" strokeWidth="1.8"/>
+                  <line x1="108" y1="150" x2="140" y2="150" stroke="#222" strokeWidth="1.8"/>
+                  <line x1="112" y1="138" x2="136" y2="162" stroke="#1a1a1a" strokeWidth="1.2"/>
+                  <line x1="136" y1="138" x2="112" y2="162" stroke="#1a1a1a" strokeWidth="1.2"/>
+                </g>
+                <rect x="34" y="90" width="112" height="56" rx="8" fill="#0d0d0d" stroke="#1a1a1a" strokeWidth="1.5"/>
+                <rect x="40" y="97" width="46" height="26" rx="3" fill="#060606" stroke="#1c1c1c" strokeWidth="1"/>
+                <circle cx="48" cy="107" r="2.8" fill="#2563eb" style={{animation:"rLed 2.4s 0s infinite"}}/>
+                <circle cx="58" cy="107" r="2.8" fill="#dc2626" style={{animation:"rLed 2.4s 0.4s infinite"}}/>
+                <circle cx="68" cy="107" r="2.8" fill="#2563eb" style={{animation:"rLed 2.4s 0.8s infinite"}}/>
+                <rect x="92" y="97" width="48" height="26" rx="3" fill="#060606" stroke="#1c1c1c" strokeWidth="1"/>
+                {[0,1,2,3,4].map(i=><line key={i} x1="96" y1={102+i*4.5} x2="136" y2={102+i*4.5} stroke="#1c1c1c" strokeWidth="0.9" strokeLinecap="round"/>)}
+                <rect x="34" y="138" width="112" height="7" rx="0" fill="#090909"/>
+                <rect x="34" y="138" width="112" height="3" fill="#2563eb" opacity="0.28"/>
+                <rect x="66" y="80" width="46" height="14" rx="4" fill="#111" stroke="#1a1a1a" strokeWidth="1"/>
+                <g style={{transformBox:"fill-box",transformOrigin:"50% 50%",animation:"rHead 2.5s ease-in-out infinite 0.15s"}}>
+                  <rect x="44" y="36" width="90" height="48" rx="7" fill="#0d0d0d" stroke="#1a1a1a" strokeWidth="1.5"/>
+                  <rect x="50" y="40" width="78" height="15" rx="3" fill="#040404" stroke="#1c1c1c" strokeWidth="1"/>
+                  <text x="89" y="51" textAnchor="middle" fill="rgba(37,99,235,0.75)" fontSize="6.5" fontFamily="'DM Mono',monospace" letterSpacing="1.2" style={{animation:"rScan 1.5s ease-in-out infinite"}}>SCANNING</text>
+                  <circle cx="89" cy="66" r="15" fill="#020202" stroke="#2563eb" strokeWidth="2.2"/>
+                  <circle cx="89" cy="66" r="10" fill="#040404"/>
+                  <circle cx="89" cy="66" r="6" fill="#080808" stroke="#1a3a70" strokeWidth="0.8"/>
+                  <circle cx="84" cy="61" r="2.8" fill="rgba(96,145,255,0.75)"/>
+                  <rect x="130" y="52" width="12" height="18" rx="3" fill="#111" stroke="#1a1a1a" strokeWidth="1"/>
+                  <circle cx="136" cy="61" r="3.5" fill="#060606" stroke="#2a2a2a" strokeWidth="0.8"/>
+                </g>
+                <g style={{transformBox:"fill-box",transformOrigin:"50% 100%",animation:"rArm 3.2s ease-in-out infinite 0.6s"}}>
+                  <line x1="78" y1="36" x2="70" y2="16" stroke="#1a1a1a" strokeWidth="2.8" strokeLinecap="round"/>
+                  <circle cx="70" cy="11" r="5.5" fill="#dc2626" style={{animation:"rAntenna 1.4s ease-in-out infinite"}}/>
+                  <circle cx="70" cy="11" r="9" fill="rgba(220,38,38,0.14)" style={{animation:"rAntenna 1.4s ease-in-out infinite"}}/>
+                </g>
+                <g style={{transformBox:"fill-box",transformOrigin:"100% 50%",animation:"rArm 2.1s ease-in-out infinite 0.3s"}}>
+                  <rect x="8" y="94" width="28" height="12" rx="4" fill="#111" stroke="#1a1a1a" strokeWidth="1"/>
+                  <rect x="2" y="90" width="10" height="9" rx="2.5" fill="#1a1a1a" stroke="#222" strokeWidth="0.8"/>
+                  <circle cx="11" cy="94" r="3" fill="#060606" stroke="#2a2a2a" strokeWidth="0.8"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+          {/* Right: specs */}
+          <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",gap:7,paddingRight:16,paddingLeft:4}}>
+            <div style={{fontSize:11,fontWeight:700,color:"#111",letterSpacing:"-0.02em",fontFamily:"'Inter',sans-serif",marginBottom:2}}>Ground Robot</div>
+            {[["Platform","Differential drive"],["Sensors","LiDAR · RGB-D"],["Vision","YOLOv8 · SLAM"],["Stack","ROS2 Humble"],["Build","Custom chassis"]].map(([k,v])=>(
+              <div key={k} style={{display:"flex",gap:8,alignItems:"baseline"}}>
+                <span style={{fontSize:9.5,color:"#bbb",width:42,flexShrink:0,fontFamily:"'DM Mono',monospace"}}>{k}</span>
+                <span style={{fontSize:10.5,color:"#333",fontFamily:"'DM Mono',monospace"}}>{v}</span>
+              </div>
+            ))}
+            <div style={{display:"flex",alignItems:"center",gap:7,marginTop:2}}>
+              <div style={{width:8,height:8,borderRadius:"50%",background:"#2563eb",animation:"rPulse 1.8s ease-out infinite",flexShrink:0}}/>
+              <span style={{fontSize:10.5,color:"#2563eb",fontWeight:600,fontFamily:"'DM Mono',monospace"}}>ONLINE</span>
+            </div>
+            <div style={{display:"flex",gap:4,flexWrap:"wrap" as const,marginTop:4}}>
+              {["autonomous","ROS2","servo","SLAM","YOLOv8","PIDs"].map(t=>(
+                <span key={t} style={{fontSize:8.5,color:"#2563eb",background:"rgba(37,99,235,0.06)",border:"1px solid rgba(37,99,235,0.15)",borderRadius:4,padding:"2px 6px",fontFamily:"'DM Mono',monospace"}}>#{t}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* ── 3D ROBOT VIEW ── */
+        <div style={{width:"100%",height:"100%",minHeight:220,display:"flex",alignItems:"center",justifyContent:"center",background:"#fff",gap:20,padding:"10px 16px"}}>
+          <Robot3DSvg />
+          <div style={{display:"flex",flexDirection:"column",gap:8,minWidth:0}}>
+            <div style={{fontSize:12,fontWeight:700,color:"#111",letterSpacing:"-0.02em",fontFamily:"'Inter',sans-serif"}}>Ground Robot</div>
+            <div style={{fontSize:10,color:"#888",lineHeight:1.6,fontFamily:"'DM Mono',monospace"}}>
+              Autonomous mobile<br/>platform with:<br/>
+              — Pan-tilt camera head<br/>
+              — 360° LiDAR sensor<br/>
+              — 6-DoF robotic arm<br/>
+              — Differential drive
+            </div>
+            <div style={{display:"flex",gap:4,flexWrap:"wrap" as const,marginTop:4}}>
+              {["ROS2","YOLOv8","SLAM","PIDs"].map(t=>(
+                <span key={t} style={{fontSize:8.5,color:"#2563eb",background:"rgba(37,99,235,0.06)",border:"1px solid rgba(37,99,235,0.15)",borderRadius:4,padding:"2px 6px",fontFamily:"'DM Mono',monospace"}}>#{t}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 // ─── PlayPage ─────────────────────────────────────────────────────────────────
 
 const PlayPage: FC = () => {
-  const [palettePos, paletteDrag] = usePlayDrag({ x: 30,  y: 20  });
-  const [moodPos,    moodDrag]    = usePlayDrag({ x: 340, y: 20  });
-  const [readPos,    readDrag]    = usePlayDrag({ x: 640, y: 20  });
-  const [quotePos,   quoteDrag]   = usePlayDrag({ x: 30,  y: 310 });
-  const [pastaPos,   pastaDrag]   = usePlayDrag({ x: 370, y: 290 });
-  const [protoPos,   protoDrag]   = usePlayDrag({ x: 640, y: 295 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [cardHover, setCardHover] = useState<"robot"|"typo"|null>(null);
+  const [curXY,     setCurXY]     = useState({ x:-200, y:-200 });
 
-  const [paletteIdx, setPaletteIdx] = useState(0);
-  const [moodIdx,    setMoodIdx]    = useState(0);
-  const [readIdx,    setReadIdx]    = useState(0);
-  const [pastaIdx,   setPastaIdx]   = useState(0);
-  const [protoIdx,   setProtoIdx]   = useState(0);
+  const [robotPos,   robotDrag]   = usePlayDrag({ x: 16,  y: 292 });
+  const [typoPos,    typoDrag]    = usePlayDrag({ x: 534, y: 292 });
+  const [musicPos,   musicDrag]   = usePlayDrag({ x: 16,  y: 18  });
+  const [pastaPos,   pastaDrag]   = usePlayDrag({ x: 402, y: 18  });
+  const [readPos,    readDrag]    = usePlayDrag({ x: 638, y: 18  });
+  const [protoPos,   protoDrag]   = usePlayDrag({ x: 902, y: 18  });
+  const [writingPos, writingDrag] = usePlayDrag({ x: 16,  y: 694 });
+  const [moviePos,   movieDrag]   = usePlayDrag({ x: 352, y: 694 });
 
-  const PALETTES = [
-    { name: "Sunset Drift",  emoji: "🌅", colors: ["#f97316","#fb923c","#fde68a","#fef3c7"], bg: "linear-gradient(135deg,#fff7ed,#fef3c7)" },
-    { name: "Ocean Depth",   emoji: "🌊", colors: ["#0ea5e9","#38bdf8","#7dd3fc","#e0f2fe"], bg: "linear-gradient(135deg,#f0f9ff,#e0f2fe)" },
-    { name: "Forest Calm",   emoji: "🌿", colors: ["#16a34a","#4ade80","#86efac","#dcfce7"], bg: "linear-gradient(135deg,#f0fdf4,#dcfce7)" },
-    { name: "Midnight",      emoji: "🌙", colors: ["#6366f1","#818cf8","#a5b4fc","#e0e7ff"], bg: "linear-gradient(135deg,#eef2ff,#e0e7ff)" },
-    { name: "Rose Blush",    emoji: "🌸", colors: ["#f43f5e","#fb7185","#fda4af","#ffe4e6"], bg: "linear-gradient(135deg,#fff1f2,#ffe4e6)" },
+  const [musicIdx,  setMusicIdx]  = useState(0);
+  const [typoIdx,   setTypoIdx]   = useState(0);
+  const [pastaIdx,  setPastaIdx]  = useState(0);
+  const [readIdx,   setReadIdx]   = useState(0);
+  const [movieIdx,  setMovieIdx]  = useState(0);
+  const [protoIdx,  setProtoIdx]  = useState(0);
+
+  const BANDS = [
+    { name:"Nevermind",       artist:"Nirvana",                  albumKey:"nevermind", genre:"Grunge",       color:"#1d4ed8", bg:"linear-gradient(135deg,#eff6ff,#dbeafe)" },
+    { name:"AM",              artist:"Arctic Monkeys",           albumKey:"am",        genre:"Indie Rock",   color:"#111",    bg:"linear-gradient(135deg,#f8f9ff,#eff6ff)" },
+    { name:"Is This It",      artist:"The Strokes",              albumKey:"isthisit",  genre:"Garage Rock",  color:"#dc2626", bg:"linear-gradient(135deg,#fff5f5,#fee2e2)" },
+    { name:"\u60aa\u306e\u83ef",           artist:"BUCK-TICK",                albumKey:"bucktick",  genre:"J-Gothic",     color:"#1d4ed8", bg:"linear-gradient(135deg,#f0f4ff,#dbeafe)" },
+    { name:"\u5d29\u58ca\u30a2\u30f3\u30d7\u30ea\u30d5\u30a1\u30fc", artist:"Asian Kung-Fu Generation",albumKey:"akfg",     genre:"J-Alternative",color:"#dc2626", bg:"linear-gradient(135deg,#fef2f2,#fee2e2)" },
+    { name:"\u30ed\u30d3\u30f3\u30bd\u30f3",        artist:"Spitz",                   albumKey:"spitz",     genre:"J-Pop Rock",   color:"#1d4ed8", bg:"linear-gradient(135deg,#eff6ff,#dbeafe)" },
   ];
-
-  const MOODS = [
-    { name: "Deep Focus",    emoji: "🎧", sub: "Aphex Twin · Brian Eno",      color: "#6366f1", bg: "linear-gradient(135deg,#eef2ff,#e0e7ff)" },
-    { name: "Late Night",    emoji: "🌃", sub: "Chet Baker · Miles Davis",     color: "#0ea5e9", bg: "linear-gradient(135deg,#f0f9ff,#dbeafe)" },
-    { name: "Morning Flow",  emoji: "☀️", sub: "Nils Frahm · Ólafur Arnalds",  color: "#f59e0b", bg: "linear-gradient(135deg,#fffbeb,#fef3c7)" },
-    { name: "Creative High", emoji: "⚡", sub: "Jungle · Tame Impala",         color: "#ec4899", bg: "linear-gradient(135deg,#fdf2f8,#fce7f3)" },
+  const TYPE_POSTERS = [
+    { letter:"A", style:"Constructivist Serif",  color:"#e8521a", bg:"#0d3535" },
+    { letter:"B", style:"Bold Grotesk",          color:"#e8e010", bg:"#1a3020" },
+    { letter:"H", style:"Extended Sans",         color:"#c0392b", bg:"#c0392b" },
+    { letter:"K", style:"Geometric Slab",        color:"#7c4da0", bg:"#b0b0b8" },
+    { letter:"M", style:"Modular Display",       color:"#e8521a", bg:"#0d1f3a" },
+    { letter:"S", style:"Italic Serif",          color:"#ffffff", bg:"#e8521a" },
   ];
-
   const READS = [
-    { name: "The Design of Everyday Things", coverKey: "doet", sub: "Don Norman",       color: "#B8281A", bg: "linear-gradient(135deg,#fff5f3,#fde8e5)" },
-    { name: "Thinking Fast & Slow",          coverKey: "tfs",  sub: "Daniel Kahneman",  color: "#192F55", bg: "linear-gradient(135deg,#f0f4ff,#dbeafe)" },
-    { name: "Ways of Seeing",                coverKey: "wos",  sub: "John Berger",      color: "#111",    bg: "linear-gradient(135deg,#f5f5f5,#e8e8e8)" },
-    { name: "The Pale King",                 coverKey: "tpk",  sub: "D.F. Wallace",     color: "#8a5c10", bg: "linear-gradient(135deg,#fffbeb,#fef3c7)" },
+    { name:"The Design of Everyday Things", coverKey:"doet", sub:"Don Norman",      color:"#dc2626", bg:"linear-gradient(135deg,#fff5f5,#fee2e2)" },
+    { name:"Thinking Fast & Slow",          coverKey:"tfs",  sub:"Daniel Kahneman", color:"#1d4ed8", bg:"linear-gradient(135deg,#eff6ff,#dbeafe)" },
+    { name:"Ways of Seeing",                coverKey:"wos",  sub:"John Berger",     color:"#111",    bg:"#fafafa" },
+    { name:"The Pale King",                 coverKey:"tpk",  sub:"D.F. Wallace",    color:"#1d4ed8", bg:"linear-gradient(135deg,#eff6ff,#dbeafe)" },
   ];
-
   const PASTAS = [
-    { name: "Cacio e Pepe",  emoji: "🍝", color: "#c8943a", bg: "linear-gradient(135deg,#fffbeb,#fef3c7)" },
-    { name: "Lasagna",       emoji: "🫕", color: "#b8402a", bg: "linear-gradient(135deg,#fff1f2,#ffe4e6)" },
-    { name: "Pesto Fusilli", emoji: "🌿", color: "#3a8840", bg: "linear-gradient(135deg,#f0fdf4,#dcfce7)" },
-    { name: "Penne Arrabb.", emoji: "🌶️", color: "#c03020", bg: "linear-gradient(135deg,#fff7ed,#fee2e2)" },
+    { name:"Cacio e Pepe",  emoji:"\uD83C\uDF5D", color:"#dc2626", bg:"linear-gradient(135deg,#fff,#fef2f2)" },
+    { name:"Lasagna",       emoji:"\uD83E\uDED5", color:"#dc2626", bg:"linear-gradient(135deg,#fef2f2,#fee2e2)" },
+    { name:"Pesto Fusilli", emoji:"\uD83C\uDF3F", color:"#1d4ed8", bg:"linear-gradient(135deg,#eff6ff,#dbeafe)" },
+    { name:"Penne Arrabb.", emoji:"\uD83C\uDF36\uFE0F", color:"#dc2626", bg:"linear-gradient(135deg,#fef2f2,#fee2e2)" },
   ];
-
+  const MOVIES = [
+    { title:"Pulp Fiction",       dir:"Tarantino", year:"1994", filmKey:"pulpfiction", color:"#dc2626", bg:"linear-gradient(135deg,#fef2f2,#fee2e2)" },
+    { title:"Big Fish",           dir:"Tim Burton",year:"2003", filmKey:"bigfish",     color:"#1d4ed8", bg:"linear-gradient(135deg,#eff6ff,#dbeafe)" },
+    { title:"A Clockwork Orange", dir:"Kubrick",   year:"1971", filmKey:"clockwork",   color:"#dc2626", bg:"linear-gradient(135deg,#fff5f5,#fee2e2)" },
+  ];
   const PROTO_TOOLS = [
-    { name: "Figma",     sub: "Smart animate · overlays · variables",    color: "#0acf83", bg: "linear-gradient(135deg,#f0fff8,#d1fae5)", Icon: FigmaToolIcon     },
-    { name: "ProtoPie",  sub: "Trigger/response · sensors · conditions", color: "#e85c3a", bg: "linear-gradient(135deg,#fff5f0,#ffe4dc)", Icon: ProtoPieToolIcon  },
-    { name: "Framer",    sub: "Code components · CMS · state vars",      color: "#0055ff", bg: "linear-gradient(135deg,#f0f4ff,#dbeafe)", Icon: FramerToolIcon    },
-    { name: "Principle", sub: "Timeline · driver-based interactions",    color: "#6c3fe0", bg: "linear-gradient(135deg,#f5f0ff,#ede9fe)", Icon: PrincipleToolIcon },
+    { name:"Figma",    sub:"Smart animate · overlays · variables",    color:"#2563eb", bg:"linear-gradient(135deg,#eff6ff,#dbeafe)", Icon:FigmaToolIcon    },
+    { name:"ProtoPie", sub:"Trigger/response · sensors · conditions", color:"#dc2626", bg:"linear-gradient(135deg,#fef2f2,#fee2e2)", Icon:ProtoPieToolIcon },
+    { name:"Framer",   sub:"Code components · CMS · state vars",      color:"#2563eb", bg:"linear-gradient(135deg,#eff6ff,#dbeafe)", Icon:FramerToolIcon   },
+    { name:"Principle",sub:"Timeline · driver-based interactions",    color:"#2563eb", bg:"linear-gradient(135deg,#eff6ff,#dbeafe)", Icon:PrincipleToolIcon},
   ];
 
-  const curPalette = PALETTES[paletteIdx];
-  const curMood    = MOODS[moodIdx];
-  const curRead    = READS[readIdx];
-  const curPasta   = PASTAS[pastaIdx];
-  const curProto   = PROTO_TOOLS[protoIdx];
+  const curBand  = BANDS[musicIdx];
+  const curPost  = TYPE_POSTERS[typoIdx];
+  const curRead  = READS[readIdx];
+  const curPasta = PASTAS[pastaIdx];
+  const curMovie = MOVIES[movieIdx];
+  const curProto = PROTO_TOOLS[protoIdx];
 
-  const Dots = ({ len, idx, color, set }: { len: number; idx: number; color: string; set: (i: number) => void }) => (
-    <div style={{ display: "flex", justifyContent: "center", gap: 5, padding: "8px 14px", borderTop: "1px solid rgba(0,0,0,0.06)" }}>
-      {Array.from({ length: len }, (_, i) => (
-        <div key={i} onClick={() => set(i)} style={{ width: i === idx ? 16 : 6, height: 6, borderRadius: 3, background: i === idx ? color : "rgba(0,0,0,0.12)", transition: "width 0.3s,background 0.3s" }} />
+  const Dots = ({ len, idx, color, set }: { len:number; idx:number; color:string; set:(i:number)=>void }) => (
+    <div style={{ display:"flex", justifyContent:"center", gap:4, padding:"8px 14px", borderTop:"1px solid rgba(255,255,255,0.06)", background:"#0a0a0a" }}>
+      {Array.from({length:len},(_,i)=>(
+        <div key={i} onClick={()=>set(i)} style={{ width:i===idx?20:6, height:3, borderRadius:0, background:i===idx?color:"rgba(255,255,255,0.18)", transition:"width 0.3s,background 0.3s", cursor:"pointer" }}/>
       ))}
     </div>
   );
 
-  return (
-    <div style={{ position: "relative", width: "100%", height: "calc(100vh - 160px)", overflow: "hidden", background: "linear-gradient(160deg,#f8f9ff 0%,#f0f4ff 50%,#f8f0ff 100%)", borderRadius: 16, border: "1px solid rgba(200,210,255,0.4)" }}>
-      <style>{`@keyframes playNodeIn{from{opacity:0;transform:translateY(12px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}`}</style>
-      <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(100,120,255,0.08) 1px,transparent 1px)", backgroundSize: "24px 24px", pointerEvents: "none" }} />
+  const UX_PILLARS = [
+    { label:"Information", desc:"Structure over style. Every word earns its place.", icon:"⌘" },
+    { label:"Logic",       desc:"If/then thinking in UI copy. States, not just labels.", icon:"◈" },
+    { label:"Empathy",     desc:"Write for the moment of use, not the moment of reading.", icon:"◉" },
+  ];
 
-      <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 5 }}>
-        <PlayWire x1={palettePos.x + 280} y1={palettePos.y + 110} x2={moodPos.x}        y2={moodPos.y + 110}  />
-        <PlayWire x1={moodPos.x + 290}    y1={moodPos.y + 110}    x2={readPos.x}         y2={readPos.y + 110}  />
-        <PlayWire x1={palettePos.x + 140} y1={palettePos.y + 220} x2={quotePos.x + 160}  y2={quotePos.y}       />
-        <PlayWire x1={moodPos.x + 145}    y1={moodPos.y + 220}    x2={pastaPos.x + 130}  y2={pastaPos.y}       />
-        <PlayWire x1={readPos.x + 135}    y1={readPos.y + 230}    x2={protoPos.x + 135}  y2={protoPos.y}       />
+  const R1B = 196; const FR = 292;
+
+  return (
+    <div ref={containerRef}
+      onMouseMove={(e)=>{ const r=containerRef.current?.getBoundingClientRect(); if(r) setCurXY({x:e.clientX-r.left,y:e.clientY-r.top}); }}
+      style={{ position:"relative", width:"100%", height:940, overflow:"hidden",
+        background:"#080808",
+        borderRadius:12, border:"1px solid rgba(255,255,255,0.08)" }}>
+
+      <style>{"@keyframes playNodeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}"}</style>
+
+      {/* Editorial grid */}
+      <div style={{ position:"absolute", inset:0, pointerEvents:"none",
+        backgroundImage:"repeating-linear-gradient(0deg,rgba(255,255,255,0.022) 0,rgba(255,255,255,0.022) 1px,transparent 1px,transparent 48px),repeating-linear-gradient(90deg,rgba(255,255,255,0.022) 0,rgba(255,255,255,0.022) 1px,transparent 1px,transparent 48px)" }}/>
+
+      {/* Corner marks */}
+      {[[14,14],[14,"auto"],[("auto" as any),14],[("auto" as any),("auto" as any)]].map((_corner,i)=>(
+        <div key={i} style={{position:"absolute",top:i<2?14:undefined,bottom:i>=2?14:undefined,left:i%2===0?14:undefined,right:i%2===1?14:undefined,width:16,height:16,borderTop:i<2?"1.5px solid rgba(255,255,255,0.2)":undefined,borderBottom:i>=2?"1.5px solid rgba(255,255,255,0.2)":undefined,borderLeft:i%2===0?"1.5px solid rgba(255,255,255,0.2)":undefined,borderRight:i%2===1?"1.5px solid rgba(255,255,255,0.2)":undefined,pointerEvents:"none"}}/>
+      ))}
+
+      {/* Custom cursor for robot / typo hover */}
+      {cardHover && (
+        <div style={{ position:"absolute", left:curXY.x-30, top:curXY.y-30,
+          width:60, height:60, pointerEvents:"none", zIndex:500,
+          border:`2px solid ${cardHover==="robot"?"#f97316":"#2563eb"}`,
+          background:cardHover==="robot"?"rgba(249,115,22,0.1)":"rgba(37,99,235,0.1)",
+          transform:"rotate(6deg)",
+          boxShadow:cardHover==="robot"?"0 0 24px rgba(249,115,22,0.35)":"0 0 24px rgba(37,99,235,0.35)",
+          display:"flex", alignItems:"center", justifyContent:"center",
+        }}>
+          <span style={{fontSize:cardHover==="robot"?22:15,fontWeight:900,color:cardHover==="robot"?"#f97316":"#2563eb",fontFamily:"'Inter',sans-serif",transform:"rotate(-6deg)",userSelect:"none",letterSpacing:"-0.04em"}}>
+            {cardHover==="robot"?"🤖":"Aa"}
+          </span>
+        </div>
+      )}
+
+      {/* Wires */}
+      <svg style={{ position:"absolute", inset:0, width:"100%", height:"100%", pointerEvents:"none", zIndex:5 }}>
+        <PlayWire x1={musicPos.x+180}  y1={musicPos.y+R1B}  x2={robotPos.x+252} y2={FR} />
+        <PlayWire x1={pastaPos.x+109}  y1={pastaPos.y+R1B}  x2={robotPos.x+400} y2={FR} />
+        <PlayWire x1={readPos.x+124}   y1={readPos.y+R1B}   x2={typoPos.x+150}  y2={FR} />
+        <PlayWire x1={protoPos.x+123}  y1={protoPos.y+R1B}  x2={typoPos.x+380}  y2={FR} />
+        <PlayWire x1={robotPos.x+504}  y1={FR+135}          x2={typoPos.x}      y2={FR+135} />
+        <PlayWire x1={robotPos.x+252}  y1={FR+270}          x2={writingPos.x+156} y2={694} />
+        <PlayWire x1={typoPos.x+252}   y1={FR+270}          x2={moviePos.x+146}   y2={694} />
       </svg>
 
-      {/* Colour Palette */}
-      <PlayNode pos={palettePos} drag={paletteDrag} width={280} label="Colour Palette" icon="◐" accent delay={0}>
-        <div style={{ padding: "18px 16px", background: curPalette.bg, transition: "background 0.5s", cursor: "pointer" }} onClick={() => setPaletteIdx(i => (i + 1) % PALETTES.length)}>
-          <div style={{ fontSize: 36, marginBottom: 10 }}>{curPalette.emoji}</div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#111", letterSpacing: "-0.01em", marginBottom: 10 }}>{curPalette.name}</div>
-          <div style={{ display: "flex", gap: 6 }}>{curPalette.colors.map((c, i) => <div key={i} style={{ flex: 1, height: 28, borderRadius: 6, background: c, transition: "background 0.4s", boxShadow: "0 1px 4px rgba(0,0,0,0.1)" }} />)}</div>
-          <div style={{ fontSize: 9, color: "rgba(0,0,0,0.3)", marginTop: 8, fontFamily: "'DM Mono',monospace", letterSpacing: "0.06em" }}>tap to change →</div>
-        </div>
-        <Dots len={PALETTES.length} idx={paletteIdx} color={curPalette.colors[0]} set={setPaletteIdx} />
-      </PlayNode>
-
-      {/* Music Mood */}
-      <PlayNode pos={moodPos} drag={moodDrag} width={290} label="Music Mood" icon="♪" delay={0.08}>
-        <div style={{ padding: "18px 16px", background: curMood.bg, transition: "background 0.5s", cursor: "pointer", minHeight: 120 }} onClick={() => setMoodIdx(i => (i + 1) % MOODS.length)}>
-          <div style={{ fontSize: 36, marginBottom: 8 }}>{curMood.emoji}</div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: curMood.color, letterSpacing: "-0.01em", marginBottom: 4, transition: "color 0.3s" }}>{curMood.name}</div>
-          <div style={{ fontSize: 10, color: "rgba(0,0,0,0.4)", fontFamily: "'DM Mono',monospace", letterSpacing: "0.03em" }}>{curMood.sub}</div>
-          <div style={{ fontSize: 9, color: "rgba(0,0,0,0.25)", marginTop: 10, fontFamily: "'DM Mono',monospace", letterSpacing: "0.06em" }}>tap to change →</div>
-        </div>
-        <Dots len={MOODS.length} idx={moodIdx} color={curMood.color} set={setMoodIdx} />
-      </PlayNode>
-
-      {/* Reading Stack */}
-      <PlayNode pos={readPos} drag={readDrag} width={270} label="Reading Stack" icon="◎" delay={0.16}>
-        <div
-          style={{ padding: "16px", background: curRead.bg, transition: "background 0.5s", cursor: "pointer", minHeight: 130, display: "flex", gap: 14, alignItems: "flex-start" }}
-          onClick={() => setReadIdx(i => (i + 1) % READS.length)}
-        >
-          <div style={{ flexShrink: 0, marginTop: 2 }}>
-            <BookCover coverKey={curRead.coverKey} />
+      {/* ── MUSIC ── large dark editorial card */}
+      <PlayNode pos={musicPos} drag={musicDrag} width={368} label="Music" icon="♪" delay={0}>
+        <div style={{background:"#0d0d0d",cursor:"pointer"}} onClick={()=>setMusicIdx(i=>(i+1)%BANDS.length)}>
+          {/* Category tag bar */}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 16px",borderBottom:"1px solid rgba(255,255,255,0.07)"}}>
+            <span style={{fontSize:7.5,color:"#f97316",fontFamily:"'DM Mono',monospace",letterSpacing:"0.2em",fontWeight:700}}>── {curBand.genre.toUpperCase()}</span>
+            <span style={{fontSize:7.5,color:"rgba(255,255,255,0.25)",fontFamily:"'DM Mono',monospace"}}>N° {String(musicIdx+1).padStart(2,"0")} / 06</span>
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: curRead.color, letterSpacing: "-0.01em", lineHeight: 1.35, marginBottom: 5, transition: "color 0.3s" }}>{curRead.name}</div>
-            <div style={{ fontSize: 10, color: "rgba(0,0,0,0.4)", fontFamily: "'DM Mono',monospace", marginBottom: 10 }}>{curRead.sub}</div>
-            <div style={{ fontSize: 9, color: "rgba(0,0,0,0.25)", fontFamily: "'DM Mono',monospace", letterSpacing: "0.06em" }}>tap to change →</div>
-          </div>
-        </div>
-        <Dots len={READS.length} idx={readIdx} color={curRead.color} set={setReadIdx} />
-      </PlayNode>
-
-      {/* Writing */}
-      <PlayNode pos={quotePos} drag={quoteDrag} width={320} label="Writing" icon="✎" delay={0.24}>
-        <div style={{ padding: "18px 20px" }}>
-          <div style={{ fontSize: 13, fontStyle: "italic", color: "#555", lineHeight: 1.85, paddingLeft: 14, borderLeft: "2px solid rgba(100,140,255,0.3)", fontFamily: "'DM Serif Display',Georgia,serif", marginBottom: 14 }}>
-            "I write literary fiction — stories about how people make sense of uncertainty, how trust forms in the dark."
-          </div>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" as const }}>
-            {["Literary Fiction", "Narrative", "Trust"].map(t => (
-              <span key={t} style={{ background: "rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 4, padding: "2px 8px", fontSize: 10, color: "#888", fontFamily: "'DM Mono',monospace" }}>{t}</span>
-            ))}
-          </div>
-        </div>
-      </PlayNode>
-
-      {/* Pasta */}
-      <PlayNode pos={pastaPos} drag={pastaDrag} width={260} label="Pasta Lover" icon="🍝" delay={0.32}>
-        <div style={{ padding: "18px 16px", background: curPasta.bg, minHeight: 120, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, transition: "background 0.5s", cursor: "pointer" }} onClick={() => setPastaIdx(i => (i + 1) % PASTAS.length)}>
-          <span style={{ fontSize: 48, lineHeight: 1 }}>{curPasta.emoji}</span>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: curPasta.color, letterSpacing: "-0.01em", transition: "color 0.3s" }}>{curPasta.name}</div>
-            <div style={{ fontSize: 9, color: curPasta.color + "88", marginTop: 3, fontFamily: "'DM Mono',monospace", letterSpacing: "0.06em" }}>tap to change →</div>
-          </div>
-        </div>
-        <Dots len={PASTAS.length} idx={pastaIdx} color={curPasta.color} set={setPastaIdx} />
-      </PlayNode>
-
-      {/* Prototyping Tools */}
-      <PlayNode pos={protoPos} drag={protoDrag} width={270} label="Prototyping Tools" icon="⬡" delay={0.40}>
-        <div
-          style={{ padding: "16px", background: curProto.bg, transition: "background 0.5s", cursor: "pointer" }}
-          onClick={() => setProtoIdx(i => (i + 1) % PROTO_TOOLS.length)}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-            <curProto.Icon />
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: curProto.color, letterSpacing: "-0.01em", transition: "color 0.3s" }}>{curProto.name}</div>
-              <div style={{ fontSize: 9, color: "rgba(0,0,0,0.4)", fontFamily: "'DM Mono',monospace", marginTop: 2, lineHeight: 1.5 }}>{curProto.sub}</div>
+          {/* Main feature */}
+          <div style={{display:"flex",gap:16,alignItems:"flex-start",padding:"16px 16px 12px"}}>
+            <div style={{flexShrink:0}}><AlbumArt albumKey={curBand.albumKey}/></div>
+            <div style={{flex:1,minWidth:0,paddingTop:2}}>
+              <div style={{fontSize:21,fontWeight:900,color:"#fff",letterSpacing:"-0.04em",lineHeight:1.1,fontFamily:"'Inter',sans-serif",marginBottom:5}}>{curBand.name}</div>
+              <div style={{fontSize:10.5,color:"rgba(255,255,255,0.35)",fontFamily:"'DM Mono',monospace",marginBottom:10}}>{curBand.artist}</div>
+              <div style={{fontSize:8.5,color:"rgba(255,255,255,0.15)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.06em"}}>tap cover to switch →</div>
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
-            {PROTO_TOOLS.map((t, i) => (
-              <div key={t.name} style={{ padding: "5px 8px", borderRadius: 5, background: i === protoIdx ? `${curProto.color}18` : "rgba(0,0,0,0.04)", border: `1px solid ${i === protoIdx ? curProto.color + "44" : "rgba(0,0,0,0.06)"}`, fontSize: 8.5, color: i === protoIdx ? curProto.color : "rgba(0,0,0,0.35)", fontFamily: "'DM Mono',monospace", transition: "all 0.3s", whiteSpace: "nowrap" as const }}>
-                {t.name}
+          {/* All 6 album strip */}
+          <div style={{display:"flex",gap:4,padding:"0 14px 14px",borderTop:"1px solid rgba(255,255,255,0.05)",paddingTop:10}}>
+            {BANDS.map((b,i)=>(
+              <div key={b.albumKey} onClick={(e)=>{e.stopPropagation();setMusicIdx(i);}}
+                style={{flex:1,aspectRatio:"1",border:i===musicIdx?"2px solid #f97316":"1.5px solid rgba(255,255,255,0.1)",overflow:"hidden",opacity:i===musicIdx?1:0.45,transition:"all 0.2s",cursor:"pointer",transform:i===musicIdx?"scale(1.06)":"scale(1)",boxShadow:i===musicIdx?"0 3px 12px rgba(249,115,22,0.3)":"none"}}>
+                <AlbumArt albumKey={b.albumKey}/>
               </div>
             ))}
           </div>
-          <div style={{ fontSize: 9, color: "rgba(0,0,0,0.25)", marginTop: 10, fontFamily: "'DM Mono',monospace", letterSpacing: "0.06em" }}>tap to change →</div>
         </div>
-        <Dots len={PROTO_TOOLS.length} idx={protoIdx} color={curProto.color} set={setProtoIdx} />
       </PlayNode>
 
-      <div style={{ position: "absolute", bottom: 14, left: 16, fontFamily: "'DM Mono',monospace", fontSize: 9, color: "rgba(0,0,0,0.2)", letterSpacing: "0.12em", textTransform: "uppercase", userSelect: "none", pointerEvents: "none" }}>drag to explore</div>
-      <div style={{ position: "absolute", bottom: 14, right: 16, fontFamily: "'DM Mono',monospace", fontSize: 9, color: "rgba(0,0,0,0.2)", letterSpacing: "0.08em", userSelect: "none", pointerEvents: "none" }}>6 nodes · 5 connections</div>
+      {/* ── PASTA ── orange editorial */}
+      <PlayNode pos={pastaPos} drag={pastaDrag} width={218} label="Pasta" icon="🍝" delay={0.04}>
+        <div style={{background:"#f97316",cursor:"pointer",padding:"16px 16px 14px",textAlign:"center" as const}} onClick={()=>setPastaIdx(i=>(i+1)%PASTAS.length)}>
+          <div style={{fontSize:7.5,color:"rgba(0,0,0,0.45)",letterSpacing:"0.2em",fontFamily:"'DM Mono',monospace",marginBottom:10,fontWeight:700}}>── PASTA LOVER</div>
+          <div style={{fontSize:52,lineHeight:1,marginBottom:10}}>{curPasta.emoji}</div>
+          <div style={{fontSize:16,fontWeight:900,color:"#000",letterSpacing:"-0.03em",fontFamily:"'Inter',sans-serif",marginBottom:3}}>{curPasta.name}</div>
+          <div style={{fontSize:7.5,color:"rgba(0,0,0,0.35)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.06em"}}>tap to change →</div>
+        </div>
+        <Dots len={PASTAS.length} idx={pastaIdx} color="#000" set={setPastaIdx}/>
+      </PlayNode>
+
+      {/* ── READING ── dark editorial */}
+      <PlayNode pos={readPos} drag={readDrag} width={248} label="Reading" icon="◎" delay={0.08}>
+        <div style={{background:"#0d0d0d",cursor:"pointer",padding:"14px 15px"}} onClick={()=>setReadIdx(i=>(i+1)%READS.length)}>
+          <div style={{fontSize:7.5,color:"rgba(255,255,255,0.3)",letterSpacing:"0.2em",fontFamily:"'DM Mono',monospace",fontWeight:700,marginBottom:12}}>── READING STACK</div>
+          <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+            <BookCover coverKey={curRead.coverKey}/>
+            <div style={{flex:1,minWidth:0,paddingTop:2}}>
+              <div style={{fontSize:12,fontWeight:700,color:"#fff",lineHeight:1.3,marginBottom:5,fontFamily:"'Inter',sans-serif"}}>{curRead.name}</div>
+              <div style={{fontSize:9.5,color:"rgba(255,255,255,0.4)",fontFamily:"'DM Mono',monospace"}}>{curRead.sub}</div>
+            </div>
+          </div>
+          <div style={{fontSize:7.5,color:"rgba(255,255,255,0.15)",fontFamily:"'DM Mono',monospace",marginTop:12,letterSpacing:"0.06em"}}>tap to change →</div>
+        </div>
+        <Dots len={READS.length} idx={readIdx} color="rgba(255,255,255,0.8)" set={setReadIdx}/>
+      </PlayNode>
+
+      {/* ── PROTOTYPING ── dark technical */}
+      <PlayNode pos={protoPos} drag={protoDrag} width={246} label="Prototyping" icon="⬡" delay={0.12}>
+        <div style={{background:"#0d0d0d",cursor:"pointer",padding:"14px"}} onClick={()=>setProtoIdx(i=>(i+1)%PROTO_TOOLS.length)}>
+          <div style={{fontSize:7.5,color:"rgba(255,255,255,0.3)",letterSpacing:"0.2em",fontFamily:"'DM Mono',monospace",fontWeight:700,marginBottom:12}}>── TOOLS</div>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+            <curProto.Icon/>
+            <div>
+              <div style={{fontSize:15,fontWeight:700,color:"#fff",fontFamily:"'Inter',sans-serif"}}>{curProto.name}</div>
+              <div style={{fontSize:8.5,color:"rgba(255,255,255,0.3)",fontFamily:"'DM Mono',monospace",marginTop:1,lineHeight:1.4}}>{curProto.sub}</div>
+            </div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:3}}>
+            {PROTO_TOOLS.map((t,i)=>(
+              <div key={t.name} style={{padding:"5px 8px",border:`1.5px solid ${i===protoIdx?"rgba(249,115,22,0.6)":"rgba(255,255,255,0.1)"}`,fontSize:8,color:i===protoIdx?"#f97316":"rgba(255,255,255,0.35)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.04em",transition:"all 0.25s"}}>{t.name}</div>
+            ))}
+          </div>
+        </div>
+        <Dots len={PROTO_TOOLS.length} idx={protoIdx} color="#f97316" set={setProtoIdx}/>
+      </PlayNode>
+
+      {/* ── ROBOT OBSESSION ── orange-header poster */}
+      <PlayNode pos={robotPos} drag={robotDrag} width={504} label="Robot Obsession" icon="◈" accent delay={0.08}
+        onMouseEnter={()=>setCardHover("robot")} onMouseLeave={()=>setCardHover(null)}>
+        <div>
+          {/* Big orange poster header */}
+          <div style={{background:"#f97316",padding:"18px 22px 14px",borderBottom:"1.5px solid rgba(0,0,0,0.2)"}}>
+            <div style={{fontSize:60,fontWeight:900,color:"#000",lineHeight:0.88,letterSpacing:"-0.05em",fontFamily:"'Inter',sans-serif"}}>ROBOT</div>
+            <div style={{display:"flex",alignItems:"baseline",gap:12,marginTop:4}}>
+              <div style={{fontSize:14,fontWeight:700,color:"rgba(0,0,0,0.4)",letterSpacing:"0.22em",fontFamily:"'DM Mono',monospace"}}>OBSESSION</div>
+              <div style={{fontSize:9,color:"rgba(0,0,0,0.35)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.12em"}}>NO. 001 · AUTONOMOUS</div>
+            </div>
+          </div>
+          {/* Robot content on white for contrast with orange header */}
+          <AnimatedRobot />
+        </div>
+      </PlayNode>
+
+      {/* ── TYPOGRAPHY ── blue editorial poster */}
+      <PlayNode pos={typoPos} drag={typoDrag} width={504} label="Typography" icon="Aa" delay={0.14}
+        onMouseEnter={()=>setCardHover("typo")} onMouseLeave={()=>setCardHover(null)}>
+        <div style={{background:"#1d4ed8",cursor:"pointer"}} onClick={()=>setTypoIdx(i=>(i+1)%TYPE_POSTERS.length)}>
+          {/* Blue header strip */}
+          <div style={{padding:"10px 18px",borderBottom:"1px solid rgba(255,255,255,0.18)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+            <span style={{fontSize:7.5,color:"rgba(255,255,255,0.6)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.2em",fontWeight:700}}>── DISPLAY POSTER SERIES</span>
+            <span style={{fontSize:7.5,color:"rgba(255,255,255,0.35)",fontFamily:"'DM Mono',monospace"}}>{curPost.style.toUpperCase()}</span>
+          </div>
+          {/* Main content */}
+          <div style={{padding:"20px 22px 16px",display:"flex",gap:20,alignItems:"stretch"}}>
+            {/* Giant letter */}
+            <div style={{display:"flex",alignItems:"center",justifyContent:"center",borderRight:"1px solid rgba(255,255,255,0.18)",paddingRight:22,minWidth:130}}>
+              <div style={{fontSize:110,fontWeight:900,color:"#fff",lineHeight:0.88,letterSpacing:"-0.06em",fontFamily:"'Inter',sans-serif",userSelect:"none",textShadow:"6px 6px 0 rgba(0,0,0,0.2)"}}>{curPost.letter}</div>
+            </div>
+            {/* Right info + thumbnails */}
+            <div style={{flex:1,display:"flex",flexDirection:"column",gap:12}}>
+              <div>
+                <div style={{fontSize:9,color:"rgba(255,255,255,0.5)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.1em",marginBottom:6}}>CURRENT SELECTION</div>
+                <div style={{fontSize:18,fontWeight:800,color:"#fff",letterSpacing:"-0.02em",fontFamily:"'Inter',sans-serif",lineHeight:1.2}}>{curPost.letter} — {curPost.style}</div>
+              </div>
+              {/* Two big poster thumbnails */}
+              <div style={{display:"flex",gap:8,flex:1}}>
+                <TypePoster posterKey={curPost.letter}/>
+                <TypePoster posterKey={TYPE_POSTERS[(typoIdx+1)%TYPE_POSTERS.length].letter}/>
+                <TypePoster posterKey={TYPE_POSTERS[(typoIdx+2)%TYPE_POSTERS.length].letter}/>
+              </div>
+              <div style={{fontSize:8,color:"rgba(255,255,255,0.3)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.06em"}}>tap to cycle →</div>
+            </div>
+          </div>
+          {/* Full poster strip */}
+          <div style={{display:"flex",gap:4,padding:"0 20px 16px"}}>
+            {TYPE_POSTERS.map((p,i)=>(
+              <div key={p.letter} style={{flex:1,height:28,background:p.bg,display:"flex",alignItems:"center",justifyContent:"center",border:i===typoIdx?"2px solid #fff":"1.5px solid rgba(255,255,255,0.15)",transition:"all 0.25s",boxShadow:i===typoIdx?"0 2px 12px rgba(0,0,0,0.4)":"none"}}>
+                <span style={{fontSize:13,fontWeight:900,color:p.color,fontFamily:"Georgia,serif"}}>{p.letter}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </PlayNode>
+
+      {/* ── UX WRITING ── white editorial */}
+      <PlayNode pos={writingPos} drag={writingDrag} width={312} label="Writing" icon="✎" delay={0.22}>
+        <div style={{background:"#fff",padding:"16px 18px"}}>
+          <div style={{fontSize:7.5,color:"rgba(0,0,0,0.3)",letterSpacing:"0.2em",fontFamily:"'DM Mono',monospace",fontWeight:700,marginBottom:14}}>── UX CONTENT WRITER</div>
+          <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:14}}>
+            {UX_PILLARS.map(p=>(
+              <div key={p.label} style={{display:"flex",gap:10,alignItems:"flex-start"}}>
+                <div style={{width:26,height:26,background:"#f97316",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                  <span style={{fontSize:11,color:"#fff"}}>{p.icon}</span>
+                </div>
+                <div>
+                  <div style={{fontSize:11.5,fontWeight:700,color:"#0d0d0d",marginBottom:1,fontFamily:"'Inter',sans-serif"}}>{p.label}</div>
+                  <div style={{fontSize:9.5,color:"#666",lineHeight:1.5,fontFamily:"'DM Sans',sans-serif"}}>{p.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{fontSize:10,fontStyle:"italic",color:"#888",lineHeight:1.7,paddingLeft:12,borderLeft:"3px solid #f97316",fontFamily:"'DM Serif Display',Georgia,serif"}}>
+            "Good UX copy disappears. You only notice it when it's wrong."
+          </div>
+        </div>
+      </PlayNode>
+
+      {/* ── MOVIES ── black film poster */}
+      <PlayNode pos={moviePos} drag={movieDrag} width={292} label="Films" icon="▶" delay={0.28}>
+        <div style={{background:"#0d0d0d",cursor:"pointer"}} onClick={()=>setMovieIdx(i=>(i+1)%MOVIES.length)}>
+          <div style={{padding:"9px 16px",borderBottom:"1px solid rgba(255,255,255,0.07)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+            <span style={{fontSize:7.5,color:"rgba(255,255,255,0.3)",fontFamily:"'DM Mono',monospace",letterSpacing:"0.2em",fontWeight:700}}>── FAVOURITE FILMS</span>
+            <span style={{fontSize:7.5,color:"rgba(255,255,255,0.2)",fontFamily:"'DM Mono',monospace"}}>N° {movieIdx+1} / {MOVIES.length}</span>
+          </div>
+          <div style={{display:"flex",gap:12,alignItems:"flex-start",padding:"14px 16px 10px"}}>
+            <MoviePoster filmKey={curMovie.filmKey}/>
+            <div style={{flex:1}}>
+              <div style={{fontSize:7.5,color:"#f97316",fontFamily:"'DM Mono',monospace",letterSpacing:"0.1em",marginBottom:6,fontWeight:700}}>{curMovie.dir.toUpperCase()} · {curMovie.year}</div>
+              <div style={{fontSize:16,fontWeight:900,color:"#fff",letterSpacing:"-0.03em",lineHeight:1.1,fontFamily:"'Inter',sans-serif"}}>{curMovie.title}</div>
+            </div>
+          </div>
+          <div style={{display:"flex",gap:3,padding:"0 14px 12px"}}>
+            {MOVIES.map((m,i)=><div key={m.filmKey} style={{flex:1,height:3,background:i===movieIdx?"#f97316":"rgba(255,255,255,0.12)",transition:"background 0.3s"}}/>)}
+          </div>
+        </div>
+      </PlayNode>
+
+      {/* Footer labels */}
+      <div style={{position:"absolute",bottom:14,left:18,fontFamily:"'DM Mono',monospace",fontSize:8.5,color:"rgba(255,255,255,0.2)",letterSpacing:"0.18em",textTransform:"uppercase",userSelect:"none",pointerEvents:"none"}}>DRAG TO EXPLORE</div>
+      <div style={{position:"absolute",bottom:14,right:18,fontFamily:"'DM Mono',monospace",fontSize:8.5,color:"rgba(255,255,255,0.2)",letterSpacing:"0.1em",userSelect:"none",pointerEvents:"none"}}>8 NODES · 7 CONNECTIONS</div>
     </div>
   );
 };
+
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
 
